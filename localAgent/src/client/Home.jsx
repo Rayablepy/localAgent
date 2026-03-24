@@ -5,8 +5,12 @@ import './Main.css'
 
 function Home() {
   const [count, setCount] = useState(0);
-    return(
+    return( 
+      <div>
     <Navbar/>
+    <Bubble/>
+    <Bubble/>
+    </div>
     )
 }
  export default Home
