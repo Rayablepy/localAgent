@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './Home.css'
+import Bubble from './components/bubble'
+import './Main.css'
 
 function Home() {
   const [count, setCount] = useState(0);
-  return(<h1>hello</h1>)
+    return(<div>
+    <Bubble/>
+    </div>)
 }
  export default Home
