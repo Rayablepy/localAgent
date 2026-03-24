@@ -13,3 +13,10 @@
     color: white;
 }
  */
+
+.navbar {
+    background: linear-gradient( 180.4deg,  rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4% );
+    color: white;
+    height: 5em;
+}
+
