@@ -1,22 +1,47 @@
-@import "tailwindcss";
 
-/*.chatbubble {
-    border-radius: 10px;
-
-    align-self: start;
-    align-content: start;
-    background: radial-gradient( circle farthest-corner at 17.6% 50.7%,  rgba(25,0,184,1) 0%, rgba(0,0,0,1) 90% );
-}
-.chatbubble-text {
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: left;
-    color: white;
-}
- */
-
-.navbar {
-    background: linear-gradient( 180.4deg,  rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4% );
-    color: white;
-    height: 5em;
+.chat-root {
+  background: linear-gradient(
+    180.4deg,
+    rgba(0, 6, 10, 1) 1%,
+    rgba(1, 190, 237, 1) 91.4%
+  );
 }
 
+.navbar-container {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  word-wrap: break-word;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-bubble {
+  background: rgba(1, 190, 237, 0.2);
+  text-align: right;
+}
+
+.incoming-bubble {
+  background: rgba(0, 0, 0, 0.4);
+  text-align: left;
+}
+
+.input-container {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-input {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.send-btn {
+  background: rgba(1, 190, 237, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}

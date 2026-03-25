@@ -4,13 +4,8 @@ import Bubble from './components/bubble'
 import './Main.css'
 
 function Home() {
-  const [count, setCount] = useState(0);
     return( 
-      <div>
-    <Navbar/>
-    <Bubble/>
-    <Bubble/>
-    </div>
+    <div></div>
     )
 }
  export default Home
