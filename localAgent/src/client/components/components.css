@@ -1,10 +1,12 @@
 @import "tailwindcss";
 .chat-root {
-  background: linear-gradient(
+  background: dimgray;
+  color: black;
+    /*linear-gradient(
     180.4deg,
     rgba(0, 6, 10, 1) 1%,
-    rgba(1, 190, 237, 1) 91.4%
-  );
+    rgb(114, 39, 145) 91.4%
+  );*/
 }
 
 .navbar-container {
@@ -21,12 +23,14 @@
 }
 
 .user-bubble {
-  background: rgba(1, 190, 237, 0.2);
+  color:black;
+  background: white;/*rgba(1, 190, 237, 0.2);*/
   text-align: right;
 }
 
 .incoming-bubble {
-  background: rgba(0, 0, 0, 0.4);
+  color: black;
+  background: white;/*rgba(0, 0, 0, 0.4)*/
   text-align: left;
 }
 
@@ -41,7 +45,8 @@
 }
 
 .send-btn {
-  background: rgba(1, 190, 237, 0.3);
+  color:black;
+  background: white;/*rgba(1, 190, 237, 0.3)*/
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid black;
 }

@@ -7,10 +7,8 @@ import "./components/components.css";
 import "./home.css"
 
 export default function Home() {
-    //placeholder
+    //dont touch
   const [messages, setMessages] = useState([
-    { type: "incoming", text: "Hello" },
-    { type: "user", text: "Hi" }
   ]);
 
     const handleSend = async (msg) => {
