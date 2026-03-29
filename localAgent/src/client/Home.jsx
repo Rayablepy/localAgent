@@ -13,17 +13,27 @@ export default function Home() {
     { type: "user", text: "Hi" }
   ]);
 
-  const handleSend = (msg) => {
-    setMessages((prev) => [...prev, { type: "user", text: msg }]);
+    const handleSend = async (msg) => {
+      setMessages((prev) => [...prev, { type: "user", text: msg }]);
 
-    //fake reply
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { type: "incoming", text: "some texxt" }
-      ]);
-    }, 500);
-  };
+      try {
+        if (!window.AgentAPI?.getOllamaResponse) {
+          throw new Error("Electron bridge not available");
+        }
+
+        const aiReply = await window.AgentAPI.getOllamaResponse(msg); //get ai reply
+
+        setMessages((prev) => [
+          ...prev,
+          { type: "incoming", text: aiReply }
+        ]);
+      } catch (error) {
+        setMessages((prev) => [
+          ...prev,
+          { type: "incoming", text: `Error: ${error.message}` }
+        ]);
+      }
+    };
 
   return (
     <div className="chat-root h-screen flex flex-col">

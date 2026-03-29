@@ -1,9 +1,9 @@
 {
   "name": "myagent",
-  "main": "index.js",
+  "main": "index.cjs",
   "private": true,
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "start": "electron .",
     "dev": "vite",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
+    "ollama": "^0.6.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.2.2"
