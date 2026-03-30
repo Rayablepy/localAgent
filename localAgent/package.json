@@ -1,13 +1,15 @@
 {
   "name": "myagent",
-  "main": "index.cjs",
+  "main": ".electron/index.js",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "electron .",
+    "start": "npm run build:electron && electron .",
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run build:electron && vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "typecheck": "tsc -p tsconfig.json --pretty false && tsc -p tsconfig.electron.json --pretty false",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -28,6 +30,7 @@
     "@eslint/js": "^9.39.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/node": "^24.7.2",
     "@vitejs/plugin-react": "^6.0.1",
     "electron": "^41.0.3",
     "electron-builder": "^26.8.1",
@@ -35,6 +38,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "typescript": "^6.0.2",
     "vite": "^8.0.1"
   }
 }

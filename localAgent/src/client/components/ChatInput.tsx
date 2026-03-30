@@ -1,8 +1,11 @@
-
 import { useState } from "react";
 import "./components.css";
 
-export default function ChatInput({ onSend }) {
+type ChatInputProps = {
+  onSend: (message: string) => void | Promise<void>;
+};
+
+export default function ChatInput({ onSend }: ChatInputProps) {
   const [text, setText] = useState("");
 
   const handleSend = () => {
@@ -19,10 +22,7 @@ export default function ChatInput({ onSend }) {
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <button
-        className="send-btn px-4 py-2 text-white"
-        onClick={handleSend}
-      >
+      <button className="send-btn px-4 py-2 text-white" onClick={handleSend}>
         Send
       </button>
     </div>
