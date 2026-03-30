@@ -2,7 +2,7 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-
+import Hamburger from '../assets/hamburger.png';
 export default function Dropdown() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -22,7 +22,7 @@ export default function Dropdown() {
         aria-expanded={open ? 'true' : undefined}
         onClick={handleClick}
       >
-        Dashboard
+        <img src={Hamburger} alt="hamburger" />
       </Button>
       <Menu
         id="basic-menu"
