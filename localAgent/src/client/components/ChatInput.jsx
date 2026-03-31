@@ -14,13 +14,13 @@ export default function ChatInput({ onSend }) {
   return (
     <div className="input-container w-full flex items-center gap-2 px-3 py-3">
       <input
-        className="chat-input flex-1 px-3 py-2 text-white outline-none"
+        className="chat-input flex-1 px-3 py-2"
         placeholder="Type a message..."
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
       <button
-        className="send-btn px-4 py-2 text-white"
+        className="send-btn px-4 py-2 "
         onClick={handleSend}
       >
         Send

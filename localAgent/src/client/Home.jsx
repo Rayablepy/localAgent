@@ -4,7 +4,6 @@ import UserBubble from "./components/UserBubble";
 import IncomingBubble from "./components/IncomingBubble";
 import ChatInput from "./components/ChatInput";
 import "./components/components.css";
-import "./home.css"
 
 export default function Home() {
     //dont touch
