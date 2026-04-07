@@ -40,4 +40,4 @@ async function insertData(query){
     }
 }
 
-export default { obtainData,insertData };
+export { obtainData,insertData };
