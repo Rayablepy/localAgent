@@ -15,5 +15,3 @@ export async function getOllamaResponse(message) {
     //console.log(response)
     return response.content;
 }
-
-

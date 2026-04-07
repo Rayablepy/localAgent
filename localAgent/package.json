@@ -17,9 +17,13 @@
     "@langchain/core": "^1.1.36",
     "@langchain/ollama": "^1.2.6",
     "@mui/material": "^7.3.9",
+    "@supabase/supabase-js": "^2.101.0",
     "@tailwindcss/vite": "^4.2.2",
+    "better-sqlite3": "^12.8.0",
     "langchain": "^1.2.37",
     "ollama": "^0.6.3",
+    "postgres": "^3.4.8",
+    "process": "^0.11.10",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.2.2"
