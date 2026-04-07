@@ -23,14 +23,21 @@ catch (error) {
 async function obtainData(query){
     const response=db.prepare(query);
     if (response.all.length>0) {
-        console.log(response.all)
+        return (response.all)
     }
     else {
-        console.log("No content returned from query")
+        return ("No content returned from query")
     }
 }
 
 async function insertData(query){
-    const insertion = db.
+    try {
+        db.run(query);
+        return ("insertion successful")
+    }
+    catch(error){
+        return (error)
+    }
 }
-export default obtainData;
+
+export default { obtainData,insertData };
