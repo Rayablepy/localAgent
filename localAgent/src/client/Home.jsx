@@ -3,11 +3,10 @@ import Navbar from "./components/Navbar";
 import UserBubble from "./components/UserBubble";
 import IncomingBubble from "./components/IncomingBubble";
 import ChatInput from "./components/ChatInput";
+import { addmessage, voidmessage } from "./chatmemorycache.js";
+import { insertionFulfilled } from "../server/chatmemory/chatmemoryservice.js";
 import "./components/components.css";
-window.messagelog = {
-  role:[],
-  content:[]
-};
+
 export function Home() {
     //dont touch
   const [messages, setMessages] = useState([
@@ -16,16 +15,14 @@ export function Home() {
     const handleSend = async (msg) => {
       setMessages((prev) => [...prev, { type: "user", text: msg }]
       );
-      window.messagelog.role.push("user")
-      window.messagelog.content.push(msg)
+      addmessage("user",msg)
       try {
         if (!window.AgentAPI?.getOllamaResponse) {
           throw new Error("Electron bridge not available");
         }
         
         const aiReply = await window.AgentAPI.getOllamaResponse(msg); //get ai reply
-        window.messagelog.role.push("ai")
-        window.messagelog.content.push(aiReply)
+        addmessage("ai",aiReply);
         setMessages((prev) => [
           ...prev,
           { type: "incoming", text: aiReply }
@@ -37,7 +34,9 @@ export function Home() {
         ]);
       }
     };
-
+    if (insertionFulfilled) {
+      voidmessage()
+    }
   return (
     <div className="chat-root h-screen flex flex-col">
       <Navbar />

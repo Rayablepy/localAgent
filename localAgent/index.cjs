@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const { getOllamaResponse } = require("./src/server/agentrouter.js")
+const { insertMessage } = require("./src/server/db/databasehandler.js")
 const path = require("path");
 
 let win
@@ -24,6 +25,9 @@ app.whenReady().then(()=> {
         //console.log(typeof message,message);
         return await getOllamaResponse(message)
     });
+    ipcMain.handle("message-cache",async (_event,message) => {
+        return await insertMessage(message)
+    })
     createwin()
 })
 

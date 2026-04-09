@@ -5,3 +5,9 @@ contextBridge.exposeInMainWorld("AgentAPI", {
     getOllamaResponse: (message) =>
         ipcRenderer.invoke("ollama:chat", message)
 });
+
+contextBridge.exposeInMainWorld("CachingAPI", {
+    insertMessage: (message) => {
+        ipcRenderer.invoke("message-cache",message)
+    }
+})

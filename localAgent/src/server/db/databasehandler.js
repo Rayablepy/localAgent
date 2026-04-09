@@ -9,7 +9,8 @@ const __dirname = path.dirname(__filename);
 
 const dbpath = path.join(__dirname,"finalsqlite")
 const db = new DatabaseSync(dbpath);
-//const schema = fs.readFileSync('./finalschema.sql','utf8')
+/*schema initialisation code
+const schema = fs.readFileSync('./finalschema.sql','utf8')
 /*
 try {
     db.exec(schema);
@@ -19,7 +20,7 @@ try {
 catch (error) {
     console.error(error);
 }
-*/
+
 async function obtainData(query){
     const response=db.prepare(query);
     if (response.all.length>0) {
@@ -29,15 +30,15 @@ async function obtainData(query){
         return ("No content returned from query")
     }
 }
-
-async function insertData(query){
+*/
+async function insertMessage(messageparams){
+    let params = { $role : messageparams.role, $content : messageparams.content }
     try {
-        db.run(query);
-        return ("insertion successful")
+        db.run("INSERT INTO messages (role, CONTENT) VALUES ($role, $content)",params)
     }
     catch(error){
         return (error)
     }
 }
 
-export { obtainData,insertData };
+export { insertMessage };

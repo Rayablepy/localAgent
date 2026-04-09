@@ -1,10 +1,17 @@
-import { obtainData,insertData } from '../db/databasehandler.js';
+import { insertMessage } from '../db/databasehandler.js';
+import { messagelog } from '/localAgent/src/client/chatmemorycache.js';
 
-const insertionresponse = await insertData('INSERT INTO messages (role,content) VALUES ("user","Some text")');
-console.log(insertionresponse);
+export let insertionFulfilled = false
+if (messagelog.content.length === 2 || messagelog.role.length === 2){
+    const insertionPromise = await insertMessage(messagelog);
+    if (insertionPromise) {
+        insertionFulfilled = true
+    }
+    else {
+        insertionFulfilled = false
+    }
+}
 
-const dataresponse = await obtainData('SELECT * FROM messages');
-console.log(dataresponse);
 
 
 
