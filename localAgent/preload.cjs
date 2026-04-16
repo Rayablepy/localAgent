@@ -1,5 +1,4 @@
 const { contextBridge, ipcRenderer } = require("electron");
-//const { getOllamaResponse } = require("/src/server/agentrouter.js")
 
 contextBridge.exposeInMainWorld("AgentAPI", {
     getOllamaResponse: (message) =>
@@ -7,7 +6,12 @@ contextBridge.exposeInMainWorld("AgentAPI", {
 });
 
 contextBridge.exposeInMainWorld("CachingAPI", {
-    insertMessage: (message) => {
-        ipcRenderer.invoke("message-cache",message)
+    //backend to frontend
+    insertionFulfilled: () => {
+        ipcRenderer.send("CachingAPI-insertionpromise:BO") //BO stands for backend origin
+    },
+    //frontend to backend
+    sendCache: () => {
+        ipcRenderer.send("CachingAPI-insertionpromise:FO") //FO stands for frontend origin
     }
-})
+});

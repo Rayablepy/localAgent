@@ -1,6 +1,10 @@
-export let messagelog = {
+let messagelog = {
     role:[],
     content:[]
+}
+
+export function messagelogdetails() {
+    return messagelog
 }
 
 export function addmessage(role,msg){

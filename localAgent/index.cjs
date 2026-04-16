@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const { getOllamaResponse } = require("./src/server/agentrouter.js")
-const { insertMessage } = require("./src/server/db/databasehandler.js")
+const { insertionFulfilled } = require("./src/server/chatmemory/chatmemoryservice.js")
+const { messagelogdetails } = require("./src/client/chatmemorycache.js")
 const path = require("path");
 
 let win
@@ -20,13 +21,18 @@ function createwin() {
     win.loadURL(url);
     win.on('closed', () => (win=null));
 }
-app.whenReady().then(()=> {
-    ipcMain.handle('ollama:chat',async (_event,message) => {
+app.whenReady().then(async () => {
+    //backend -> frontend
+    ipcMain.handle('ollama:chat', async (_event, message) => {
         //console.log(typeof message,message);
-        return await getOllamaResponse(message)
+        return await getOllamaResponse(message);
     });
-    ipcMain.handle("message-cache",async (_event,message) => {
-        return await insertMessage(message)
+    ipcMain.handle('CachingAPI-insertionpromise:BO', async(_event) => {
+        return await insertionFulfilled();
+    })
+    //frontend -> backend
+    ipcMain.handle('CachingAPI-insertionpromise:FO', async(_event) => {
+        return messagelogdetails();
     })
     createwin()
 })
