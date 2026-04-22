@@ -6,12 +6,6 @@ contextBridge.exposeInMainWorld("AgentAPI", {
 });
 
 contextBridge.exposeInMainWorld("CachingAPI", {
-    //backend to frontend
-    insertionFulfilled: () => {
-        ipcRenderer.send("CachingAPI-insertionpromise:BO") //BO stands for backend origin
-    },
-    //frontend to backend
-    sendCache: () => {
-        ipcRenderer.send("CachingAPI-insertionpromise:FO") //FO stands for frontend origin
-    }
+    persistMessageCycle: (cachePayload) =>
+        ipcRenderer.invoke("chat:persist-cycle", cachePayload)
 });

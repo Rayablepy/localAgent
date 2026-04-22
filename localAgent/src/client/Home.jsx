@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import UserBubble from "./components/UserBubble";
 import IncomingBubble from "./components/IncomingBubble";
 import ChatInput from "./components/ChatInput";
-import { addmessage, voidmessage } from "./chatmemorycache.js";
+import { addmessage, isMessageCycleComplete, messagelogdetails, voidmessage } from "./chatmemorycache.js";
 import "./components/components.css";
 
 export function Home() {
@@ -25,6 +25,18 @@ export function Home() {
         ...prev,
         {type: "incoming", text: aiReply}
       ]);
+
+      if (!window.CachingAPI?.persistMessageCycle) {
+        throw new Error("Caching bridge not available");
+      }
+
+      if (isMessageCycleComplete()) {
+        const persisted = await window.CachingAPI.persistMessageCycle(messagelogdetails());
+
+        if (persisted) {
+          voidmessage();
+        }
+      }
     } catch (error) {
       setMessages((prev) => [
         ...prev,
@@ -32,7 +44,7 @@ export function Home() {
       ]);
     }
   };
-  voidmessage()
+
   return (
       <div className="chat-root h-screen flex flex-col">
         <Navbar/>

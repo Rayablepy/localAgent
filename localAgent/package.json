@@ -9,7 +9,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "rebuild:native": "electron-rebuild -f -w better-sqlite3",
+    "postinstall": "npm run rebuild:native"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -19,7 +21,7 @@
     "@mui/material": "^7.3.9",
     "@supabase/supabase-js": "^2.101.0",
     "@tailwindcss/vite": "^4.2.2",
-    "better-sqlite3": "^12.8.0",
+    "better-sqlite3": "^12.9.0",
     "langchain": "^1.2.37",
     "ollama": "^0.6.3",
     "postgres": "^3.4.8",

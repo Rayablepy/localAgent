@@ -1,43 +1,31 @@
-import { DatabaseSync } from "node:sqlite";
+import Database from "better-sqlite3";
 import path from "path";
 import {fileURLToPath} from "url";
-//import fs from "fs";
 
-//because of module js, __dirname has to be manually created
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dbpath = path.join(__dirname,"finalsqlite")
-const db = new DatabaseSync(dbpath);
-/*schema initialisation code
-const schema = fs.readFileSync('./finalschema.sql','utf8')
-/*
-try {
-    db.exec(schema);
-    console.log("Database successfully created");
+const db = new Database(dbpath);
 
-}
-catch (error) {
-    console.error(error);
-}
+const insertMessageStatement = db.prepare(
+    "INSERT INTO messages (role, CONTENT) VALUES (?, ?)"
+);
 
-async function obtainData(query){
-    const response=db.prepare(query);
-    if (response.all.length>0) {
-        return (response.all)
+const insertMessagesTransaction = db.transaction((messages) => {
+    for (const message of messages) {
+        insertMessageStatement.run(message.role, message.content);
     }
-    else {
-        return ("No content returned from query")
-    }
-}
-*/
-async function insertMessage(messageparams){
-    let params = { $role : messageparams.role, $content : messageparams.content }
+});
+
+function insertMessage(messages){
     try {
-        db.run("INSERT INTO messages (role, CONTENT) VALUES ($role, $content)",params)
+        insertMessagesTransaction(messages);
+        return true;
     }
     catch(error){
-        return (error)
+        console.error("Failed to insert message cycle into SQLite", error);
+        return false;
     }
 }
 

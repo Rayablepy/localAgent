@@ -1,10 +1,23 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
-const { getOllamaResponse } = require("./src/server/agentrouter.js")
-const { insertionFulfilled } = require("./src/server/chatmemory/chatmemoryservice.js")
-const { messagelogdetails } = require("./src/client/chatmemorycache.js")
 const path = require("path");
+const { pathToFileURL } = require("url");
 
-let win
+let win;
+let getOllamaResponse;
+let persistMessageCycle;
+
+async function loadBackendModules() {
+    const agentRouterModule = await import(
+        pathToFileURL(path.join(__dirname, "src/server/agentrouter.js")).href
+    );
+    const chatMemoryServiceModule = await import(
+        pathToFileURL(path.join(__dirname, "src/server/chatmemory/chatmemoryservice.js")).href
+    );
+
+    getOllamaResponse = agentRouterModule.getOllamaResponse;
+    persistMessageCycle = chatMemoryServiceModule.persistMessageCycle;
+}
+
 function createwin() {
     win = new BrowserWindow({
         width:1000,
@@ -22,21 +35,18 @@ function createwin() {
     win.on('closed', () => (win=null));
 }
 app.whenReady().then(async () => {
-    //backend -> frontend
+    await loadBackendModules();
+
     ipcMain.handle('ollama:chat', async (_event, message) => {
-        //console.log(typeof message,message);
         return await getOllamaResponse(message);
     });
-    ipcMain.handle('CachingAPI-insertionpromise:BO', async(_event) => {
-        return await insertionFulfilled();
-    })
-    //frontend -> backend
-    ipcMain.handle('CachingAPI-insertionpromise:FO', async(_event) => {
-        return messagelogdetails();
-    })
-    createwin()
-})
+    ipcMain.handle('chat:persist-cycle', async (_event, cachePayload) => {
+        return await persistMessageCycle(cachePayload);
+    });
+
+    createwin();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== "darwin") app.quit();
-})
+});
