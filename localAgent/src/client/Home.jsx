@@ -12,14 +12,13 @@ export default function Home() {
 
     const handleSend = async (msg) => {
       setMessages((prev) => [...prev, { type: "user", text: msg }]);
-
+      await window.MessageAPI.insertMessage({role:"user",content:msg})
       try {
         if (!window.AgentAPI?.getOllamaResponse) {
           throw new Error("Electron bridge not available");
         }
-
         const aiReply = await window.AgentAPI.getOllamaResponse(msg); //get ai reply
-
+        await window.MessageAPI.insertMessage({role: "ai",content: aiReply});
         setMessages((prev) => [
           ...prev,
           { type: "incoming", text: aiReply }

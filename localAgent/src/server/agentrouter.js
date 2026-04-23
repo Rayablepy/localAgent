@@ -1,4 +1,3 @@
-
 import { ChatOllama } from "@langchain/ollama"
 
 const agent = new ChatOllama({

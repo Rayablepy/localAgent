@@ -1,6 +1,13 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
-const { getOllamaResponse } = require("./src/server/agentrouter.js")
-const path = require("path");
+import { app, BrowserWindow, ipcMain } from "electron";
+import { getOllamaResponse } from './src/server/agentrouter.js'
+import { insertMessage } from "./src/server/database/databasehandler.js";
+import path from "path";
+import process from "process";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let win
 function createwin() {
@@ -24,6 +31,9 @@ app.whenReady().then(()=> {
         //console.log(typeof message,message);
         return await getOllamaResponse(message)
     });
+    ipcMain.handle('database:messages',async (_event,message) => {
+        return await insertMessage(message)
+    })
     createwin()
 })
 

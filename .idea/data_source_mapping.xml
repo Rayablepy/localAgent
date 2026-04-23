@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/fb049aa9-a27b-4883-a8f5-e7d39cdf47e7/console.sql" value="fb049aa9-a27b-4883-a8f5-e7d39cdf47e7" />
+    <file url="file://$PROJECT_DIR$/localAgent/src/server/database/finalsqlite.sql" value="fb049aa9-a27b-4883-a8f5-e7d39cdf47e7" />
+  </component>
+</project>
