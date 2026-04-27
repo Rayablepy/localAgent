@@ -5,7 +5,7 @@ import {fileURLToPath} from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dbpath = path.join(__dirname,"identifier.sqlite");
+export const dbpath = path.join(__dirname,"identifier.sqlite");
 const db = new Database(dbpath);
 
 const insertMessageStatement = db.prepare(
@@ -16,7 +16,7 @@ const insertMessagesTransaction = db.transaction((message) => {
     insertMessageStatement.run(message.role, message.content);
 });
 
-async function insertMessage(message){
+export async function insertMessage(message){
     try {
         insertMessagesTransaction(message);
         return true;
@@ -26,5 +26,3 @@ async function insertMessage(message){
         return false;
     }
 }
-
-export { insertMessage };
