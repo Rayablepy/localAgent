@@ -1,4 +1,5 @@
 from langchain.agents import create_agent
+
 model = create_agent(
     model="ollama:qwen3.5:0.8b",
     system_prompt="You are my helpful assistant"
