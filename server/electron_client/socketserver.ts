@@ -1,4 +1,4 @@
-import http = require('http')
+import * as http from 'http'
 const wss = new http.Server();
 
 wss.listen(3000, () => {
