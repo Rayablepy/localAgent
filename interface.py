@@ -1,18 +1,20 @@
+#File temporarily not in use, ignore for now
+'''
 import streamlit as st
-from agent import model_response
-from db import add,readall
+import datetime
+from db import message_table
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+messages = message_table.get_all()
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
+for message in messages:
+    with st.chat_message(message["origin"]):
         st.markdown(message["content"])
 
 if prompt := st.chat_input("Your message here..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    message_table.insert(prompt,"user",datetime.datetime.now())
     with st.chat_message("user"):
         st.markdown(prompt)
     with st.chat_message("assistant"):
         response = st.write_stream(model_response(prompt))
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    message_table.insert(prompt, "assistant", datetime.datetime.now())
+'''

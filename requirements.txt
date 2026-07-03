@@ -4,5 +4,6 @@ langchain-openai
 ollama
 transformers
 torch
+deeepagents
 accelerate
 sqlite3
