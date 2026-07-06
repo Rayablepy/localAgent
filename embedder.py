@@ -7,6 +7,7 @@ from langchain_chroma import Chroma
 splitter = RecursiveCharacterTextSplitter(
     chunk_size = 1000,chunk_overlap=200, add_start_index=True
 )
+
 def load_pdf(path: str)->list[Document]:
     reader = pypdf.PdfReader(path)
     return [
@@ -18,6 +19,8 @@ def load_pdf(path: str)->list[Document]:
     ]
 
 docs = load_pdf("./seed-data/sampledata.pdf")
+splits = splitter.split_documents(docs)
+
 embeddings = OpenAIEmbeddings(
     model="nomic-ai/nomic-embed-text-v1.5-GGUF",
     openai_api_base="http://localhost:1234/v1",
@@ -25,13 +28,15 @@ embeddings = OpenAIEmbeddings(
     check_embedding_ctx_length=False#prevents remote context checking
 )
 
-vector = embeddings.embed_query(documents[0].page_content)
-
-assert vector is not None
-
 vector_storage = Chroma(
     collection_name="localAgent-vectordb",
-    enbedding_function = embeddings,
+    embedding_function = embeddings,
     persist_directory="./chroma_langchain_db"
 )
-#print(f"Generated vectors:\n{vector}")
+
+ids = vector_storage.add_documents(documents=splits)
+
+result = vector_storage.similarity_search(
+    "Full name of user?z"
+)
+print(result[0])
