@@ -3,7 +3,7 @@ import pypdf
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
-
+from modelloader import embeddingmodelname
 splitter = RecursiveCharacterTextSplitter(
     chunk_size = 1000,chunk_overlap=200, add_start_index=True
 )
@@ -22,7 +22,7 @@ docs = load_pdf("./seed-data/sampledata.pdf")
 splits = splitter.split_documents(docs)
 
 embeddings = OpenAIEmbeddings(
-    model="nomic-ai/nomic-embed-text-v1.5-GGUF",
+    model=embeddingmodelname,
     openai_api_base="http://localhost:1234/v1",
     openai_api_key="lm-studio",
     check_embedding_ctx_length=False#prevents remote context checking
@@ -35,8 +35,10 @@ vector_storage = Chroma(
 )
 
 ids = vector_storage.add_documents(documents=splits)
+async def embedderresult(query:str)->Document:
+    result = await vector_storage.asimilarity_search(
+        "Skills of user?"
+    )
+    return result[0]
 
-result = vector_storage.similarity_search(
-    "Full name of user?z"
-)
-print(result[0])
+print(embedderresult(""))

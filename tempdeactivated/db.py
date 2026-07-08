@@ -1,3 +1,5 @@
+#file temporarily not in use
+'''
 import sqlite3 as sql
 import datetime
 
@@ -80,5 +82,6 @@ class MessageTable:
 
 db = DBManager("localAgent.db")
 message_table = MessageTable(db)
+'''
 
 

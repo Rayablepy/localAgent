@@ -1,0 +1,4 @@
+.env
+localAgent.db
+chroma_langchain_db
+.venv
