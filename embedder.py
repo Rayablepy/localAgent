@@ -41,4 +41,4 @@ async def embedderresult(query:str)->Document:
     )
     return result[0]
 
-print(embedderresult(""))
+#print(embedderresult(""))

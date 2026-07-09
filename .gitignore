@@ -2,3 +2,5 @@
 localAgent.db
 chroma_langchain_db
 .venv
+.idea
+localAgent_PROJECT_OUTLINE.md
