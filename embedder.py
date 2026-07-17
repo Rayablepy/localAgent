@@ -37,8 +37,6 @@ vector_storage = Chroma(
 ids = vector_storage.add_documents(documents=splits)
 async def embedderresult(query:str)->Document:
     result = await vector_storage.asimilarity_search(
-        "Skills of user?"
+        query
     )
     return result[0]
-
-#print(embedderresult(""))

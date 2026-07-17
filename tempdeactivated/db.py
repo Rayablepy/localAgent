@@ -39,6 +39,7 @@ class MessageTable:
             content TEXT NOT NULL,
             origin TEXT NOT NULL,
             timestamp DATETIME NOT NULL
+            )
         """
         self.db.querydb(create_table)
 

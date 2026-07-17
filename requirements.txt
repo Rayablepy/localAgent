@@ -4,6 +4,10 @@ langchain-openai
 ollama
 transformers
 torch
-deeepagents
+deepagents
 accelerate
-sqlite3
+langchain-chroma
+langchain-text-splitters
+pypdf
+python-dotenv
+langgraph
