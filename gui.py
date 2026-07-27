@@ -28,27 +28,14 @@ st.sidebar.divider()
 st.sidebar.header("Saved Files")
 files = list_data()
 if files:
-    for file in files:
-        cols = st.sidebar.columns([3, 1])
-        cols[0].write(file)
-        if cols[1].button("Delete", key=f"del_{file}"):
-            delete_data(file)
-            st.rerun()
+    selected = st.sidebar.multiselect("Select files to delete", files)
+    if st.sidebar.button("Delete Selected", type="primary"):
+        for path in selected:
+            delete_data(path)
+        st.sidebar.success(f"Deleted {len(selected)} file(s)")
+        st.rerun()
 else:
     st.sidebar.write("No files saved yet.")
-
-    st.divider()
-    st.header("Remove Data")
-    indexed_files = list_files()
-    if indexed_files:
-        selected = st.multiselect("Select files to remove", indexed_files)
-        if st.button("Remove Selected", type="primary"):
-            for path in selected:
-                asyncio.run(remove_data(path))
-            st.success(f"Removed {len(selected)} file(s)")
-            st.rerun()
-    else:
-        st.caption("No files indexed yet.")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
