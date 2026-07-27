@@ -2,7 +2,7 @@ import asyncio
 import os
 from config import ACTUAL_FILE_PATH
 import streamlit as st
-from loader import save_data, remove_data, list_files
+from loader import save_data, delete_data, list_data
 from main import getresponse
 
 DIR = ACTUAL_FILE_PATH
@@ -22,6 +22,20 @@ with st.sidebar:
                 out.write(f.getbuffer())
             save_data(f.name)
         st.success(f"Saved {len(uploaded_files)} file(s) to {DIR}")
+        st.rerun()
+
+st.sidebar.divider()
+st.sidebar.header("Saved Files")
+files = list_data()
+if files:
+    for file in files:
+        cols = st.sidebar.columns([3, 1])
+        cols[0].write(file)
+        if cols[1].button("Delete", key=f"del_{file}"):
+            delete_data(file)
+            st.rerun()
+else:
+    st.sidebar.write("No files saved yet.")
 
     st.divider()
     st.header("Remove Data")

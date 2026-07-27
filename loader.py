@@ -1,40 +1,89 @@
-
+import os
 import textract
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from functools import lru_cache
+from langchain_text_splitters import TokenTextSplitter
 from langchain_core.documents import Document
-from langchain.tools import tool
-from config import ACTUAL_FILE_PATH, EMBEDDING_MODEL_NAME, CHUNK_SIZE, CHUNK_OVERLAP, EMBEDDING_BATCH_SIZE
+from langchain_core.tools import tool
+from config import ACTUAL_FILE_PATH, EMBEDDING_MODEL_NAME, EMBEDDING_MODEL_CONTEXT, EMBEDDING_MODEL_CHUNK
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
-embeddings = OpenAIEmbeddings(
-    model=EMBEDDING_MODEL_NAME,
-    openai_api_base="http://localhost:1234/v1",
-    openai_api_key="lm-studio",
-)
 
-store = Chroma(
-    collection_name="NL2SQL",
-    embedding_function=embeddings,
-    persist_directory="./chroma_NL2SQL",
-)
+
+@lru_cache(maxsize=1)
+def _get_embeddings():
+    return OpenAIEmbeddings(
+        model=EMBEDDING_MODEL_NAME,
+        openai_api_base="http://localhost:1234/v1",
+        openai_api_key="lm-studio",
+        check_embedding_ctx_length=False,
+    )
+
+
+@lru_cache(maxsize=1)
+def _get_store():
+    return Chroma(
+        collection_name="NL2SQL",
+        embedding_function=_get_embeddings(),
+        persist_directory="./chroma_NL2SQL",
+    )
+
+
+@lru_cache(maxsize=1)
+def _get_retriever():
+    return _get_store().as_retriever(
+        search_type="similarity",
+        search_kwargs={"k": 5},
+    )
+
+
+@lru_cache(maxsize=1)
+def _get_text_splitter():
+    return TokenTextSplitter(
+        encoding_name="cl100k_base",
+        chunk_size=EMBEDDING_MODEL_CONTEXT,
+        chunk_overlap=EMBEDDING_MODEL_CHUNK,
+    )
+
 
 def read_data(file_path: str) -> list[Document]:
-    text = textract.process(file_path).decode("utf-8")
+    try:
+        text = textract.process(file_path).decode("utf-8")
+    except Exception as e:
+        raise RuntimeError(f"Failed to read {file_path}: {e}")
     return [
         Document(
             page_content=text,
-            metadata={"source": file_path},
+            metadata={"source": os.path.basename(file_path)},
         )
     ]
 
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, add_start_index=True)
 
-def save_data(file_name: str):
-    docs=read_data(ACTUAL_FILE_PATH+file_name)
-    splits = text_splitter.split_documents(docs)
-    for i in range(0, len(splits), EMBEDDING_BATCH_SIZE):
-        batch = splits[i:i + EMBEDDING_BATCH_SIZE]
-        store.add_documents(documents=batch)
+def save_data(file_name: str, batch_size: int = 50):
+    full_path = os.path.join(ACTUAL_FILE_PATH, file_name)
+    if not os.path.exists(full_path):
+        raise FileNotFoundError(f"File not found: {full_path}")
+    source = os.path.basename(full_path)
+    _get_store().delete(where={"source": source})
+    docs = read_data(full_path)
+    splits = _get_text_splitter().split_documents(docs)
+    _get_store().add_documents(documents=splits, batch_size=batch_size)
+
+
+def list_data() -> list[str]:
+    collection = _get_store()._collection
+    results = collection.get(include=["metadatas"])
+    sources = set()
+    for meta in results.get("metadatas", []) or []:
+        if meta and "source" in meta:
+            sources.add(meta["source"])
+    return sorted(sources)
+
+
+def delete_data(file_name: str) -> str:
+    source = os.path.basename(file_name)
+    _get_store().delete(where={"source": source})
+    return f"Deleted documents with source: {source}"
+
 
 @tool
 async def query_data(query: str, k: int = 4) -> str:
@@ -47,30 +96,10 @@ async def query_data(query: str, k: int = 4) -> str:
     Returns:
         str: The matching results from the database
     """
-    results = await store.asimilarity_search(query, k=k)
-    return "Results:\n" + "\n".join([doc.page_content for doc in results])
-
-async def remove_data(file_path: str) -> str:
-    """Remove all document chunks from the RAG database that were ingested from a specific file
-
-    Args:
-        file_path (str): The source file path to remove (as stored in document metadata)
-
-    Returns:
-        str: A message confirming how many chunks were removed, or that no matching chunks were found
-    """
-    existing = store.get(where={"source": file_path})
-    if existing and existing["ids"]:
-        count = len(existing["ids"])
-        store.delete(ids=existing["ids"])
-        return f"Removed {count} chunks sourced from '{file_path}'."
-    return f"No chunks found for source '{file_path}'."
-
-def list_files() -> list[str]:
-    all_data = store.get(include=["metadatas"])
-    sources = set()
-    if all_data and all_data["metadatas"]:
-        for meta in all_data["metadatas"]:
-            if "source" in meta:
-                sources.add(meta["source"])
-    return sorted(sources)
+    results = await _get_retriever().ainvoke(query)
+    lines = []
+    for doc in results:
+        source = doc.metadata.get("source", "unknown")
+        content = doc.page_content[:2000]
+        lines.append(f"[source: {source}]\n{content}")
+    return "Results:\n\n" + "\n".join(lines)
