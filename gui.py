@@ -20,7 +20,7 @@ with st.sidebar:
             dest = os.path.join(DIR, f.name)
             with open(dest, "wb") as out:
                 out.write(f.getbuffer())
-                save_data(f.name)
+            save_data(f.name)
         st.success(f"Saved {len(uploaded_files)} file(s) to {DIR}")
         st.rerun()
 
@@ -36,6 +36,19 @@ if files:
             st.rerun()
 else:
     st.sidebar.write("No files saved yet.")
+
+    st.divider()
+    st.header("Remove Data")
+    indexed_files = list_files()
+    if indexed_files:
+        selected = st.multiselect("Select files to remove", indexed_files)
+        if st.button("Remove Selected", type="primary"):
+            for path in selected:
+                asyncio.run(remove_data(path))
+            st.success(f"Removed {len(selected)} file(s)")
+            st.rerun()
+    else:
+        st.caption("No files indexed yet.")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []

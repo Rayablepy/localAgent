@@ -86,11 +86,12 @@ def delete_data(file_name: str) -> str:
 
 
 @tool
-async def query_data(query: str) -> str:
+async def query_data(query: str, k: int = 4) -> str:
     """Query a local RAG database for information matching the query
 
     Args:
         query (str): The query string to search for in the database
+        k (int): Number of top results to return (default: 4)
 
     Returns:
         str: The matching results from the database
