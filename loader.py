@@ -67,6 +67,16 @@ def save_data(file_name: str, batch_size: int = 50):
     _get_store().add_documents(documents=splits, batch_size=batch_size)
 
 
+def list_data() -> list[str]:
+    collection = _get_store()._collection
+    results = collection.get(include=["metadatas"])
+    sources = set()
+    for meta in results.get("metadatas", []) or []:
+        if meta and "source" in meta:
+            sources.add(meta["source"])
+    return sorted(sources)
+
+
 def delete_data(file_name: str) -> str:
     source = os.path.basename(file_name)
     _get_store().delete(where={"source": source})
