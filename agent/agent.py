@@ -1,7 +1,14 @@
+
+from config.settings import ENABLED_TOOLS
+from system_prompt import build_system_prompt
+from modelloader import chatmodelname
 import asyncio
 from langchain.chat_models import init_chat_model
 from deepagents import create_deep_agent
-from modelloader import chatmodelname
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph import StateGraph
+
+checkpointer = InMemorySaver()
 model = init_chat_model(
         model=chatmodelname,
         model_provider="openai",
@@ -9,13 +16,8 @@ model = init_chat_model(
         api_key="not-needed",
         temperature=0.5
 )
-system="""
-You are the user's personal AI assistant running locally on their computer. Your tools are not yet created, but you will 
-be able to accept and read documents and files that the user gives you
-"""
 
-
-agent = create_deep_agent(model=model,system_prompt=system)
+agent = create_deep_agent(model=model,system_prompt=build_system_prompt(ENABLED_TOOLS))
 
 async def response(message:str):
     return await agent.ainvoke(
@@ -26,10 +28,10 @@ while True:
     user = str(input("Enter prompt: ")).lower()
     if user == "q":
         break
-    print("-"*100)
+    print("-"*75)
     modelresponse = asyncio.run(response(user))
     print(modelresponse["messages"][-1].content_blocks[0]['text'])
-    print("-"*100)
+    print("-"*75)
 
 
 
