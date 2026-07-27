@@ -17,4 +17,4 @@ agent = create_agent(
 )
 async def getresponse(user:str) -> str:
     response = await agent.ainvoke({"messages": [{"role": "user", "content": user}]})
-    return response["messages"][-1].content_blocks[0]['text']
+    return response["messages"][-1].content
