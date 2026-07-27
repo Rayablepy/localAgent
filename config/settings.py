@@ -1,13 +1,18 @@
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from pathlib import Path
 #tool list that agent will have access to, update when tools are added or removed
 ENABLED_TOOLS: list[str] = [
-    # "rag",
+    "rag",
     # "filesystem",
     # "notes",
     # "calendar",
     # "web",
 ]
+
+CHAT_MODEL_NAME=os.getenv("CHAT_MODEL_NAME")
+EMBEDDING_MODEL_NAME=os.getenv("EMBEDDING_MODEL_NAME")
 
 # directory that file system tool has access to
 WORKSPACE_ROOT = Path.home() / "localAgent-workspace"
@@ -18,7 +23,6 @@ READONLY_PATHS: list[Path] = [
 ]
 
 #high risk tools that require approval
-
 REQUIRE_APPROVAL: set[str] = {
     "send_email",
     "delete_file",
@@ -39,8 +43,8 @@ CHROMA_PERSIST_DIR = Path(__file__).resolve().parent.parent / "chroma_langchain_
 
 # Retrieval
 
-RAG_CHUNK_SIZE = 1000
-RAG_CHUNK_OVERLAP = 200
+EMBEDDING_MODEL_CONTEXT=int(os.getenv("EMBEDDING_MODEL_CONTEXT", 512))
+EMBEDDING_MODEL_CHUNK=int(os.getenv("EMBEDDING_MODEL_CHUNK", 64))
 RAG_TOP_K = 4
 
 # Web tool limits (not yet implemented)

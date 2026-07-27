@@ -1,11 +1,11 @@
 import asyncio
 import os
-from config import ACTUAL_FILE_PATH
+from config.settings import CHROMA_PERSIST_DIR
 import streamlit as st
-from loader import save_data, delete_data, list_data
-from main import getresponse
+from memory.vectorstore import save_data, delete_data, list_data
+from agent.agent import response
 
-DIR = ACTUAL_FILE_PATH
+DIR = CHROMA_PERSIST_DIR
 os.makedirs(DIR, exist_ok=True)
 
 with st.sidebar:
@@ -48,6 +48,6 @@ if prompt := st.chat_input("Your input here..."):
         st.markdown(prompt)
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            response = asyncio.run(getresponse(prompt))
-        st.markdown(response)
+            reply = asyncio.run(response(prompt))
+        st.markdown(reply)
     st.session_state.messages.append({"role": "assistant", "content": response})

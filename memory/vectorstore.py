@@ -4,7 +4,7 @@ from functools import lru_cache
 from langchain_text_splitters import TokenTextSplitter
 from langchain_core.documents import Document
 from langchain_core.tools import tool
-from config import ACTUAL_FILE_PATH, EMBEDDING_MODEL_NAME, EMBEDDING_MODEL_CONTEXT, EMBEDDING_MODEL_CHUNK
+from config.settings import CHROMA_PERSIST_DIR, EMBEDDING_MODEL_NAME, EMBEDDING_MODEL_CONTEXT, EMBEDDING_MODEL_CHUNK
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 
@@ -24,7 +24,7 @@ def _get_store():
     return Chroma(
         collection_name="NL2SQL",
         embedding_function=_get_embeddings(),
-        persist_directory="./chroma_NL2SQL",
+        persist_directory=CHROMA_PERSIST_DIR,
     )
 
 
@@ -59,7 +59,7 @@ def read_data(file_path: str) -> list[Document]:
 
 
 def save_data(file_name: str, batch_size: int = 50):
-    full_path = os.path.join(ACTUAL_FILE_PATH, file_name)
+    full_path = os.path.join(CHROMA_PERSIST_DIR, file_name)
     if not os.path.exists(full_path):
         raise FileNotFoundError(f"File not found: {full_path}")
     source = os.path.basename(full_path)
