@@ -62,6 +62,8 @@ def save_data(file_name: str, batch_size: int = 50):
     full_path = os.path.join(ACTUAL_FILE_PATH, file_name)
     if not os.path.exists(full_path):
         raise FileNotFoundError(f"File not found: {full_path}")
+    source = os.path.basename(full_path)
+    _get_store().delete(where={"source": source})
     docs = read_data(full_path)
     splits = _get_text_splitter().split_documents(docs)
     _get_store().add_documents(documents=splits, batch_size=batch_size)
