@@ -1,0 +1,8 @@
+.env
+.env.example
+localAgent.db
+chroma_langchain_db
+.venv
+.idea
+__pycache__
+localAgent_PROJECT_OUTLINE.md

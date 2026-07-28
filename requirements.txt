@@ -1,0 +1,14 @@
+streamlit
+langchain
+langchain-openai
+ollama
+transformers
+torch
+deepagents
+accelerate
+langchain-chroma
+langchain-text-splitters
+pypdf
+python-dotenv
+langgraph
+textract
