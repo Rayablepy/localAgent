@@ -6,3 +6,4 @@ chroma_langchain_db
 .idea
 __pycache__
 localAgent_PROJECT_OUTLINE.md
+database/database.db
