@@ -1,5 +1,4 @@
 .env
-.env.example
 localAgent.db
 chroma_langchain_db
 .venv

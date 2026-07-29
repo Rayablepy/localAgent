@@ -1,8 +1,9 @@
 import sqlite3
+from database.db import conn
 from langchain_core.tools import tool
 
 @tool
-def add_item(conn, name:str, information:str, timestamp:str):
+def add_item(name:str, information:str, timestamp:str):
     """Add a new item/task to execute to a todo list.
     Args:
         name (str): The name of the item/task.
@@ -17,7 +18,7 @@ def add_item(conn, name:str, information:str, timestamp:str):
     conn.commit()
 
 @tool
-def alter_item_name(conn, name:str, new_name:str):
+def alter_item_name(name:str, new_name:str):
     """Alter the name of an item/task in the todo list.
     Args:
         name (str): The name of the item/task.
@@ -31,7 +32,7 @@ def alter_item_name(conn, name:str, new_name:str):
     conn.commit()
 
 @tool
-def alter_item_description(conn, name:str, new_description:str):
+def alter_item_description(name:str, new_description:str):
     """Alter the description of an item/task in the todo list.
     Args:
         name (str): The name of the item/task.
@@ -45,7 +46,7 @@ def alter_item_description(conn, name:str, new_description:str):
     conn.commit()
 
 @tool
-def alter_item_status(conn, name:str, complete:int):
+def alter_item_status(name:str, complete:int):
     """Alter the status of an item/task in the todo list.
     Args:
         name (str): The name of the item/task.
@@ -59,7 +60,7 @@ def alter_item_status(conn, name:str, complete:int):
     conn.commit()
 
 @tool
-def delete_item(conn, name:str):
+def delete_item(name:str):
     """Delete an item/task from the todo list.
     Args:
         name (str): The name of the item/task.
