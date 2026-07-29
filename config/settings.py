@@ -7,7 +7,7 @@ load_dotenv()
 ENABLED_TOOLS: list[str] = [
     "rag",
     # "filesystem",
-    # "notes",
+    "todo/notes",
     # "calendar",
     # "web",
 ]

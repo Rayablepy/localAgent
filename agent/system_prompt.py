@@ -32,7 +32,7 @@ TOOL_NOTES = {
            "than general knowledge.",
     "filesystem": "You have read/write access to a specific sandboxed directory. "
                   "You cannot access files outside it.",
-    "notes": "You can create, read, and update the user's notes and todos. This is "
+    "todo/notes": "You can create, read, and update the user's notes and todos. This is "
              "the source of truth for their tasks — don't track todos in your own "
              "memory instead.",
     "calendar": "You have read-only access to the user's calendar. You cannot create "
