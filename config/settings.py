@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
-load_dotenv()
 from pathlib import Path
+load_dotenv()
+
 #tool list that agent will have access to, update when tools are added or removed
 ENABLED_TOOLS: list[str] = [
     "rag",
     # "filesystem",
-    # "notes",
+    "todo/notes",
     # "calendar",
     # "web",
 ]

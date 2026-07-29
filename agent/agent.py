@@ -1,4 +1,4 @@
-from memory.vectorstore import query_data
+from tools.tools import tool_list
 from config.settings import ENABLED_TOOLS
 from agent.system_prompt import build_system_prompt
 from config.settings import CHAT_MODEL_NAME
@@ -14,13 +14,10 @@ model = init_chat_model(
         api_key="not-needed",
         temperature=0.5
 )
-tools=[query_data]
+tools=tool_list
 agent = create_deep_agent(model=model,system_prompt=build_system_prompt(ENABLED_TOOLS),tools=tools)
 
 async def response(message:str):
     return await agent.ainvoke(
         {"messages": [{"role": "user", "content": message}]},
     )
-
-
-
