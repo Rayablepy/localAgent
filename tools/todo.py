@@ -71,4 +71,4 @@ def delete_item(conn, name:str):
     )
     conn.commit()
 
-todo_tool_list=[alter_item_name, alter_item_description, alter_item_status, delete_item]
+todo_tool_list=[add_item, alter_item_name, alter_item_description, alter_item_status, delete_item]
