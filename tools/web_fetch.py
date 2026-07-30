@@ -26,19 +26,29 @@ def clean_page(soup: BeautifulSoup,url:str) -> str:
                     element[attr] = urljoin(url, element[attr])
     return main
 
-def convert_to_md(page:str,url:str) -> str:
+def convert_to_md(page:str,url:str,max_chars:int=5000) -> str:
     soup=BeautifulSoup(page,"html.parser")
     main = clean_page(soup,url)
     md_txt=md(
         str(main),
+        heading_style="ATX",
         strip=TOREMOVE
     )
-    
+    if len(md_txt) > max_chars:
+        md_txt = md_txt[:max_chars].rsplit('\n', 1)[0]
+    return md_txt
 
-async def web_fetch():
+@tool
+async def web_fetch(url:str,max_chars:int=5000) -> str:
+    """Performs an asynchronous HTTP GET request to the specified URL and returns the response as a markdown string.
+    ONLY USE WHEN A SIMPLE READ IS NEEDED.
+
+    Args:
+        url (str): The URL to fetch.
+        max_chars (int, optional): The maximum number of characters to return. Defaults to 5000.
+    Returns:
+        str: The response as a markdown string.
+    """
     async with httpx.AsyncClient() as client:
-        response = await client.get("https://books.toscrape.com")
-        soup = BeautifulSoup(response.text, 'html.parser')
-        print(soup)
-
-asyncio.run(web_fetch())
+        response = await client.get(url)
+        return convert_to_md(response.text,url,max_chars)
