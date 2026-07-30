@@ -12,7 +12,8 @@ subagent_model = init_chat_model(
 )
 
 subagent = create_agent(model=subagent_model)
-
+#deprecated function
+'''
 def web_browse(search: str)->str:
     with Stealth().use_sync(sync_playwright()) as p:
         browser = p.chromium.launch(
@@ -49,5 +50,6 @@ def web_browse(search: str)->str:
 
         return(f"All links found related to search query : \n{links}")
         browser.close()
+'''
 
 print(web_browse("Nanyang polytechnic"))
