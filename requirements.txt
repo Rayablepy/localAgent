@@ -18,3 +18,4 @@ httpx
 markdownify
 textract
 playwright
+playwright-stealth
