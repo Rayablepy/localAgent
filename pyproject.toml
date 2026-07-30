@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "accelerate>=1.14.0",
     "browser-use>=0.11.13",
+    "bs4>=0.0.2",
     "deepagents>=0.6.12",
     "dotenv>=0.9.9",
     "httpx>=0.28.1",
