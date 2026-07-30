@@ -13,6 +13,7 @@ ENABLED_TOOLS: list[str] = [
 ]
 
 CHAT_MODEL_NAME=os.getenv("CHAT_MODEL_NAME")
+SUBAGENT_MODEL_NAME=os.getenv("SUBAGENT_MODEL_NAME")
 EMBEDDING_MODEL_NAME=os.getenv("EMBEDDING_MODEL_NAME")
 
 # directory that file system tool has access to
