@@ -1,14 +1,13 @@
 from langchain_core.tools import tool
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
-import re
 import httpx
-import asyncio
+from pydantic import  AnyHttpUrl
 from urllib.parse import urljoin
 SELECTION = ["main","article",'[role="main"]',"#content",".content","body"]
 TOREMOVE = ["script", "style","nav","aside","form","iframe","svg","noscript"]
 
-def clean_page(soup: BeautifulSoup,url:str) -> str:
+def clean_page(soup: BeautifulSoup,url:str):
     for tag in TOREMOVE:
         for element in soup.find_all(tag):
             element.decompose()
@@ -39,16 +38,17 @@ def convert_to_md(page:str,url:str,max_chars:int=5000) -> str:
     return md_txt
 
 @tool
-async def web_fetch(url:str,max_chars:int=5000) -> str:
+async def web_fetch(url:AnyHttpUrl,max_chars:int=5000) -> str:
     """Performs an asynchronous HTTP GET request to the specified URL and returns the response as a markdown string.
-    ONLY USE WHEN A SIMPLE READ IS NEEDED.
+    ONLY USE WHEN A SIMPLE READ IS NEEDED AND IF USER HAS EXPLICITLY PROVIDED A URL.
 
     Args:
-        url (str): The URL to fetch.
+        url (AnyHttpUrl): The URL to fetch.
         max_chars (int, optional): The maximum number of characters to return. Defaults to 5000.
     Returns:
         str: The response as a markdown string.
     """
+    url = str(url)
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         return convert_to_md(response.text,url,max_chars)
