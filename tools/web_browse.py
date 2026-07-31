@@ -1,17 +1,22 @@
-from langchain.chat_models import init_chat_model
+
 from langchain_core.tools import tool
-from langchain.agents import create_agent
-from playwright_stealth import Stealth
-from playwright.sync_api import sync_playwright
-subagent_model = init_chat_model(
-        model="",
-        model_provider="openai",
-        base_url="http://localhost:1234/v1",
-        api_key="not-needed",
-        temperature=0.3
+from config.settings import SUBAGENT_MODEL_NAME, LOCAL_MODEL_API_KEY, LOCAL_MODEL_BASE_URL
+from browser_use import ChatOpenAI, Agent
+import asyncio
+subagent_model = ChatOpenAI(
+        model=SUBAGENT_MODEL_NAME,
+        base_url=LOCAL_MODEL_BASE_URL,
+        api_key=LOCAL_MODEL_API_KEY,
+        temperature=0.3,
 )
 
-subagent = create_agent(model=subagent_model)
+async def browsing_subagent(task):
+        agent = Agent(task=task,llm=subagent_model)
+        await agent.run()
+
+user = input("Enter task: ")
+
+asyncio.run(browsing_subagent(task=user))
 #deprecated function
 '''
 def web_browse(search: str)->str:
@@ -52,4 +57,3 @@ def web_browse(search: str)->str:
         browser.close()
 '''
 
-print(web_browse("Nanyang polytechnic"))
