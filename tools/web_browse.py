@@ -1,22 +1,35 @@
 
-from langchain_core.tools import tool
-from config.settings import SUBAGENT_MODEL_NAME, LOCAL_MODEL_API_KEY, LOCAL_MODEL_BASE_URL
 from browser_use import ChatOpenAI, Agent
+from browser_use.agent.views import MessageCompactionSettings
+from config.settings import SUBAGENT_MODEL_NAME, LOCAL_MODEL_API_KEY, LOCAL_MODEL_BASE_URL
 import asyncio
+
 subagent_model = ChatOpenAI(
-        model=SUBAGENT_MODEL_NAME,
-        base_url=LOCAL_MODEL_BASE_URL,
-        api_key=LOCAL_MODEL_API_KEY,
-        temperature=0.3,
+    model=SUBAGENT_MODEL_NAME,
+    base_url=LOCAL_MODEL_BASE_URL,
+    api_key=LOCAL_MODEL_API_KEY,
+    temperature=0.2,
+    max_completion_tokens=1024,
+    frequency_penalty=0.0,
 )
 
 async def browsing_subagent(task):
-        agent = Agent(task=task,llm=subagent_model)
-        await agent.run()
+    agent = Agent(
+        task=task,
+        llm=subagent_model,
+        use_vision=False,
+        use_thinking=False,
+        enable_planning=False,
+        use_judge=False,
+        max_clickable_elements_length=10000,
+        message_compaction=MessageCompactionSettings(trigger_char_count=2000),
+        llm_timeout=300,
+    )
+    await agent.run()
 
-user = input("Enter task: ")
-
-asyncio.run(browsing_subagent(task=user))
+if __name__ == "__main__":
+    user = input("Enter task: ")
+    asyncio.run(browsing_subagent(task=user))
 #deprecated function
 '''
 def web_browse(search: str)->str:
@@ -56,4 +69,3 @@ def web_browse(search: str)->str:
         return(f"All links found related to search query : \n{links}")
         browser.close()
 '''
-
