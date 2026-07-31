@@ -1,7 +1,6 @@
 streamlit
 langchain
 langchain-openai
-ollama
 transformers
 torch
 deepagents
@@ -17,4 +16,5 @@ dotenv
 httpx
 markdownify
 textract
-
+playwright
+playwright-stealth
