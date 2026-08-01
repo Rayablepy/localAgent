@@ -1,10 +1,14 @@
 import httpx
 from langchain_core.tools import tool
-
+from web_fetch import convert_to_md
+from pydantic import AnyHttpUrl
 
 @tool
-async def browser_open(url: str, max_chars: int = 4000) -> str:
-    ...
+async def browser_open(url: AnyHttpUrl, max_chars: int = 4000) -> str:
+    url = str(url)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        return convert_to_md(response.text, url, max_chars)
     #TODO Navigate; returns title + page markdown + numbered table of interactive elements
 
 @tool
