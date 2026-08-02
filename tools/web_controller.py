@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 from playwright_stealth import Stealth
 
 browser = None
-page=None
+page = None
 
 def get_page():
     global browser, page
@@ -24,7 +24,13 @@ def get_page():
             )
             page = context.new_page()
 
-async def browser_open(url: AnyHttpUrl, max_chars: int = 4000):
+async def browser_open(url: AnyHttpUrl, max_chars: int = 4000) -> str:
+    page = get_page()
+    page.goto(url)
+    page.wait_for_load_state("domcontentloaded")
+    title = page.title()
+    body = page.locator("body").inner_text()
+
     ...
     #TODO Navigate; returns title + page markdown + numbered table of interactive elements
 
