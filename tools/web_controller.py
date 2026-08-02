@@ -1,34 +1,31 @@
-import httpx
-from tools.web_fetch import convert_to_md
-from langchain_core.tools import tool
-from pydantic import AnyHttpUrl
-from bs4 import BeautifulSoup
+
 import asyncio
+from playwright.sync_api import sync_playwright
+from playwright_stealth import Stealth
+
+browser = None
+page=None
+
+def get_page():
+    global browser, page
+    if page is None:
+        with Stealth().use_sync(sync_playwright()) as p:
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-infobars",
+                ]
+            )
+            context = browser.new_context(
+                viewport={"width": 1920, "height": 1080},
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            )
+            page = context.new_page()
+
 async def browser_open(url: AnyHttpUrl, max_chars: int = 4000):
-    url = str(url)
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        main_page = convert_to_md(response.text,str(url))
-        soup = BeautifulSoup(response.text, "html.parser")
-        interactives = [
-            "a",
-            "button",
-            "details",
-            "embed",
-            "iframe",
-            "input",
-            "label",
-            "select",
-            "textarea",
-            "audio",
-            "video",
-            "summary"
-        ]
-        interactives = soup.find_all(interactives)
-        interactives_list= [f"{i}:{element}" for i, element in enumerate(interactives)]
-        title = soup.title.string
-        full_page=f"Page title:\n {title} \n Main page as markdown: \n {main_page} \n Interactive elements:\n {str(interactives_list)}"
-        return full_page
+    ...
     #TODO Navigate; returns title + page markdown + numbered table of interactive elements
 
 if '__main__' == __name__:
