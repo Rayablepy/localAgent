@@ -1,44 +1,52 @@
-
-import asyncio
-from playwright.sync_api import sync_playwright
+from pydantic import AnyHttpUrl
+from pathlib import Path
+from playwright.sync_api import sync_playwright, Browser, Page, BrowserContext, Playwright
 from playwright_stealth import Stealth
 
-browser = None
-page = None
-INTERACTIVES = (('a[href], button, input, select, textarea, details, summary, '
-                        '[role="button"], [role="link"], [role="combobox"], '
-                        '[contenteditable="true"]')
+INTERACTIVES_TABLE: str | None = None
+playwright: Playwright | None = None
+browser: Browser | None = None
+context: BrowserContext | None = None
+page: Page | None = None
 
-def get_page():
-    global browser, page
+def interactives_rendererjs() -> str:
+    global INTERACTIVES_TABLE
+    if INTERACTIVES_TABLE is None:
+        INTERACTIVES_TABLE = (Path(__file__).parent / "js_middleware" / "interactives_table.js").read_text()
+    return INTERACTIVES_TABLE
+
+def get_page() -> Page:
+    global playwright, browser, context, page
     if page is None:
-        with Stealth().use_sync(sync_playwright()) as p:
-            browser = p.chromium.launch(
-                headless=True,
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                    "--no-sandbox",
-                    "--disable-infobars",
-                ]
-            )
-            context = browser.new_context(
-                viewport={"width": 1920, "height": 1080},
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-            )
-            page = context.new_page()
+        playwright = sync_playwright().start()
+        browser = playwright.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-infobars",
+            ]
+        )
+        context = browser.new_context(
+            viewport={"width": 1920, "height": 1080},
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        )
+        page = context.new_page()
+        Stealth().apply_stealth_sync(page)
+    return page
 
-async def browser_open(url: AnyHttpUrl, max_chars: int = 4000) -> str:
+def browser_open(url: AnyHttpUrl, max_chars: int = 4000) -> str:
     page = get_page()
-    page.goto(url)
+    page.goto(url, timeout=30_000)
     page.wait_for_load_state("domcontentloaded")
     title = page.title()
-    body = page.locator("body").inner_text()
-
-    ...
-    #TODO Navigate; returns title + page markdown + numbered table of interactive elements
+    body = page.locator("body").inner_text()[:max_chars].rsplit('\n', 1)[0]
+    interactives: list[dict[str, str | int | bool]] = page.evaluate(interactives_rendererjs())
+    rows = [f"{r['index']:>3} {r['tag']:<14} {r['label']}" + (f" = {r['value']}" if r['value'] else "") for r in interactives]
+    return f"Title: {title}\nBody: {body}\n\nInteractive elements:\n" + "\n".join(rows)
 
 if '__main__' == __name__:
-    print(asyncio.run(browser_open('https://www.nyp.edu.sg/main')))
+    print(browser_open('https://www.nyp.edu.sg/main'))
 #@tool
 async def browser_click(index: int) -> str:
     ...
