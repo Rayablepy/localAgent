@@ -5,6 +5,9 @@ from playwright_stealth import Stealth
 
 browser = None
 page = None
+INTERACTIVES = (('a[href], button, input, select, textarea, details, summary, '
+                        '[role="button"], [role="link"], [role="combobox"], '
+                        '[contenteditable="true"]')
 
 def get_page():
     global browser, page
