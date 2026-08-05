@@ -2,6 +2,7 @@ from pydantic import AnyHttpUrl
 from pathlib import Path
 from playwright.sync_api import sync_playwright, Browser, Page, BrowserContext, Playwright
 from playwright_stealth import Stealth
+from langchain_core.tools import tool
 
 INTERACTIVES_TABLE: str | None = None
 playwright: Playwright | None = None
@@ -34,8 +35,15 @@ def get_page() -> Page:
         page = context.new_page()
         Stealth().apply_stealth_sync(page)
     return page
-
-def browser_open(url: AnyHttpUrl, max_chars: int = 4000) -> str:
+@tool
+def browser_open(url: str, max_chars: int = 4000) -> str:
+    '''Opens a browser page to the specified URL and returns page title, body content and a numbered table of interactive elements.
+    Args:
+        url (str): The URL to open(MUST BE A VALID URL)
+        max_chars (int, optional): The maximum number of characters to include in the body content. Defaults to 4000.
+    Returns:
+        str: A formatted string containing the page title, body content and a numbered table of interactive elements.
+    '''
     page = get_page()
     page.goto(url, timeout=30_000)
     page.wait_for_load_state("domcontentloaded")
@@ -45,8 +53,6 @@ def browser_open(url: AnyHttpUrl, max_chars: int = 4000) -> str:
     rows = [f"{r['index']:>3} {r['tag']:<14} {r['label']}" + (f" = {r['value']}" if r['value'] else "") for r in interactives]
     return f"Title: {title}\nBody: {body}\n\nInteractive elements:\n" + "\n".join(rows)
 
-if '__main__' == __name__:
-    print(browser_open('https://www.nyp.edu.sg/main'))
 #@tool
 async def browser_click(index: int) -> str:
     ...
@@ -81,3 +87,5 @@ async def browser_read(max_chars: int = 5000) -> str:
 async def browser_wait(ms: int = 2000) -> str:
     ...
     #TODO Wait for page load / settle; returns current page summary
+
+browser_tools=[browser_open]
