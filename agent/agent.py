@@ -5,7 +5,7 @@ from config.settings import CHAT_MODEL_NAME
 from langchain.chat_models import init_chat_model
 from deepagents import create_deep_agent
 from langgraph.checkpoint.memory import InMemorySaver
-from deepagents.middleware.filesystem import FileSystemMiddleware
+from deepagents.backends import FileSystemBackend,CompositeBackend,StateBackend
 from langchain.agents.middleware import ToDoListMiddleware
 checkpointer = InMemorySaver()
 model = init_chat_model(
@@ -16,7 +16,17 @@ model = init_chat_model(
         temperature=0.5
 )
 tools=tool_list
-middleware = [ToDoListMiddleware(),FileSystemMiddleware()]
+middleware = [
+    ToDoListMiddleware()
+]
+
+backend=CompositeBackend(
+    default=StateBackend(),
+    routes={
+        "/memories/": FileSystemBackend(root_dir="/longtermcode/localAgent",virtual_mode=True),
+        "/workspace/": FileSystemBackend(root_dir="/longtermcode/localAgent",virtual_mode=True)
+    }
+)
 agent = create_deep_agent(model=model,system_prompt=build_system_prompt(ENABLED_TOOLS),tools=tools,middleware=middleware)
 
 async def response(message:str):
