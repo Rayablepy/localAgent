@@ -1,13 +1,14 @@
+import sqlite3
 from tools.tools import tool_list
-from config.settings import ENABLED_TOOLS
+from config.settings import ENABLED_TOOLS, PROJECT_ROOT
 from agent.system_prompt import build_system_prompt
-from config.settings import CHAT_MODEL_NAME
+from config.settings import CHAT_MODEL_NAME, DB_PATH
 from langchain.chat_models import init_chat_model
 from deepagents import create_deep_agent
-from langgraph.checkpoint.memory import InMemorySaver
-from deepagents.backends import FileSystemBackend,CompositeBackend,StateBackend
-from langchain.agents.middleware import ToDoListMiddleware
-checkpointer = InMemorySaver()
+from deepagents.backends import FilesystemBackend,CompositeBackend,StateBackend, StoreBackend
+from langgraph.store.sqlite import SqliteStore
+
+
 model = init_chat_model(
         model=CHAT_MODEL_NAME,
         model_provider="openai",
@@ -16,18 +17,20 @@ model = init_chat_model(
         temperature=0.5
 )
 tools=tool_list
-middleware = [
-    ToDoListMiddleware()
-]
+
+DB_PATH.parent.mkdir(parents=True,exist_ok=True)
+conn=sqlite3.connect(DB_PATH,check_same_thread=False)
+local_store = SqliteStore(conn)
+local_store.setup()
 
 backend=CompositeBackend(
     default=StateBackend(),
     routes={
-        "/memories/": FileSystemBackend(root_dir="/longtermcode/localAgent",virtual_mode=True),
-        "/workspace/": FileSystemBackend(root_dir="/longtermcode/localAgent",virtual_mode=True)
+        "/longtermmemories/": StoreBackend(store=local_store,namespace=("localAgent","longterm")),
+        "/project/": FilesystemBackend(root_dir=PROJECT_ROOT,virtual_mode=True)
     }
 )
-agent = create_deep_agent(model=model,system_prompt=build_system_prompt(ENABLED_TOOLS),tools=tools,middleware=middleware)
+agent = create_deep_agent(model=model,system_prompt=build_system_prompt(ENABLED_TOOLS),tools=tools,backend=backend)
 
 async def response(message:str):
     return await agent.ainvoke(
