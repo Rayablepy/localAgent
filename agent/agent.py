@@ -6,7 +6,7 @@ from config.settings import CHAT_MODEL_NAME, DB_PATH
 from langchain.chat_models import init_chat_model
 from deepagents import create_deep_agent
 from deepagents.backends import FilesystemBackend,CompositeBackend,StateBackend, StoreBackend
-from langgraph.store.sqlite import SqliteStore
+from langgraph.store.sqlite.aio import AsyncSqliteStore
 
 
 model = init_chat_model(
@@ -20,13 +20,13 @@ tools=tool_list
 
 DB_PATH.parent.mkdir(parents=True,exist_ok=True)
 conn=sqlite3.connect(DB_PATH,check_same_thread=False)
-local_store = SqliteStore(conn)
+local_store = AsyncSqliteStore(conn)
 local_store.setup()
 
 backend=CompositeBackend(
     default=StateBackend(),
     routes={
-        "/longtermmemories/": StoreBackend(store=local_store,namespace=("localAgent","longterm")),
+        "/longtermmemories/": StoreBackend(store=local_store,namespace=lambda _: ("localAgent","longterm")),
         "/project/": FilesystemBackend(root_dir=PROJECT_ROOT,virtual_mode=True)
     }
 )

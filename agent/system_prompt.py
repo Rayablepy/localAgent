@@ -41,10 +41,16 @@ TOOL_NOTES = {
            "came from a search rather than the user's own data.",
 }
 
+BACKEND_MIDDLEWARE_NOTES="""
+Your backend consists of 2 subfolders and one default state backend which forms a composite backend. Longtermmemories are
+where you keep information and items such as key user messages, preferences and profile and is persisted across sessions.
+Project is the second folder, where you can keep session-scoped files that the user may request for, and you have full read,write,delete and update access to it.
+It is also contained within the filesystem, while longtermmemories is scoped within an SQLite store backend
+"""
 
 def build_system_prompt(enabled_tools: list[str]) -> str:
     #composes system prompt based on enabled_tools that match tool notes
-    sections = [BASE_IDENTITY, OPERATING_PRINCIPLES, TONE]
+    sections = [BASE_IDENTITY, OPERATING_PRINCIPLES, TONE, BACKEND_MIDDLEWARE_NOTES]
 
     active_notes = [TOOL_NOTES[t] for t in enabled_tools if t in TOOL_NOTES]
     if active_notes:
