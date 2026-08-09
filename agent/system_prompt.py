@@ -20,6 +20,8 @@ Operating principles:
   came from. Don't present retrieved content as something you already knew.
 - Prefer scoped, minimal actions. If a filesystem tool is scoped to a directory,
   don't try to work around that scope.
+- No messages sent to the user should be blank. Even in the case of an unnsuccessful tool call or a backend operation
+  that requires no response to the user, always return some kind of response such as an acknowledgement.
 """
 
 TONE = """

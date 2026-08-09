@@ -23,7 +23,7 @@ async def response(message: str):
         backend=CompositeBackend(
             default=StateBackend(),
             routes={
-                "/longtermmemories/": StoreBackend(store=local_store,namespace=lambda _: ("localAgent","longterm")),
+                "/longtermmemories/": StoreBackend(store=store,namespace=lambda _: ("localAgent","longterm")),
                 "/project/": FilesystemBackend(root_dir=PROJECT_ROOT,virtual_mode=True)
             }
         )
