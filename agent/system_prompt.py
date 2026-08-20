@@ -44,10 +44,13 @@ TOOL_NOTES = {
 }
 
 BACKEND_MIDDLEWARE_NOTES="""
-Your backend consists of 2 subfolders and one default state backend which forms a composite backend. Longtermmemories are
-where you keep information and items such as key user messages, preferences and profile and is persisted across sessions.
-Project is the second folder, where you can keep session-scoped files that the user may request for, and you have full read,write,delete and update access to it.
-It is also contained within the filesystem, while longtermmemories is scoped within an SQLite store backend
+Backend layout:
+- `/longtermmemories/` is a persistent, cross-session store (SQLite). `/longtermmemories/AGENTS.md` holds the user's
+  profile and is auto-loaded into your context at the start of every session. When you learn something durable about
+  the user — preferences, corrections, facts about how they work — update that file with the `edit_file` tool in the
+  same turn. You may also store other durable notes as separate files anywhere under `/longtermmemories/`.
+- `/project/` is a sandboxed project directory on the machine's filesystem for session-scoped working files. You have
+  full read/write/delete access inside it, and you cannot access files outside it.
 """
 
 def build_system_prompt(enabled_tools: list[str]) -> str:

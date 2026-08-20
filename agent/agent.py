@@ -1,4 +1,3 @@
-import sqlite3
 from tools.tools import tool_list
 from config.settings import ENABLED_TOOLS, PROJECT_ROOT
 from agent.system_prompt import build_system_prompt
@@ -9,6 +8,7 @@ from deepagents.backends import FilesystemBackend,CompositeBackend,StateBackend,
 from langgraph.store.sqlite.aio import AsyncSqliteStore
 
 DB_PATH.parent.mkdir(parents=True,exist_ok=True)
+PROJECT_ROOT.mkdir(parents=True,exist_ok=True)
 model = init_chat_model(
         model=CHAT_MODEL_NAME,
         model_provider="openai",
@@ -31,7 +31,10 @@ async def response(message: str):
             model=model,
             system_prompt=build_system_prompt(ENABLED_TOOLS),
             tools=tools,
-            backend=backend)
+            backend=backend,
+            store=store,
+            memory=["/longtermmemories/AGENTS.md"],
+        )
         return await agent.ainvoke(
             {"messages": [{"role": "user", "content": message}]},
         )
