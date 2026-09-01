@@ -30,6 +30,7 @@ async def response(message: str):
         agent = create_deep_agent(
             model=model,
             system_prompt=build_system_prompt(ENABLED_TOOLS),
+            memory=["/longtermmemories/AGENTS.md"],
             tools=tools,
             backend=backend)
         return await agent.ainvoke(
