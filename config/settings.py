@@ -6,7 +6,7 @@ load_dotenv()
 #tool list that agent will have access to, update when tools are added or removed
 ENABLED_TOOLS: list[str] = [
     "rag",
-    # "filesystem",
+    "filesystem",
     "todo/notes",
     # "calendar",
     # "web",
@@ -15,8 +15,8 @@ ENABLED_TOOLS: list[str] = [
 CHAT_MODEL_NAME=os.getenv("CHAT_MODEL_NAME")
 EMBEDDING_MODEL_NAME=os.getenv("EMBEDDING_MODEL_NAME")
 
-# directory that file system tool has access to
-PROJECT_ROOT = Path.home()
+# directory that file system tool has access to (dedicated agent sandbox)
+PROJECT_ROOT = Path.home() / "agent_project"
 
 #(not yet fully implemented) read-only directories the agent can look into but never write to
 READONLY_PATHS: list[Path] = [
