@@ -34,7 +34,6 @@ async def response(message: str):
             tools=tools,
             backend=backend,
             store=store,
-            memory=["/longtermmemories/AGENTS.md"],
         )
         return await agent.ainvoke(
             {"messages": [{"role": "user", "content": message}]},
