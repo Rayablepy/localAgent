@@ -12,6 +12,6 @@ cursor.execute(
 )
 try:
     conn.commit()
-    print("Table created successfully")
+    #print("Table created successfully")
 except sqlite3.OperationalError:
     print("Error executing table creation")
