@@ -9,12 +9,11 @@ from langgraph.store.sqlite.aio import AsyncSqliteStore
 
 DB_PATH.parent.mkdir(parents=True,exist_ok=True)
 PROJECT_ROOT.mkdir(parents=True,exist_ok=True)
+
 model = init_chat_model(
-        model=CHAT_MODEL_NAME,
-        model_provider="openai",
-        base_url=LOCAL_MODEL_BASE_URL,
-        api_key=LOCAL_MODEL_API_KEY,
-        temperature=0.5
+    CHAT_MODEL_NAME,
+    model_provider="openrouter",
+    temperature=0.6
 )
 tools=tool_list
 async def response(message: str):
