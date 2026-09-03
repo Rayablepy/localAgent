@@ -1,9 +1,8 @@
 import sqlite3
 from pathlib import Path
+from config.settings import DB_PATH
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-DB_PATH = SCRIPT_DIR / "database.db"
-
+DB_PATH.parent.mkdir(parents=True,exist_ok=True)
 conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 
 cursor=conn.cursor()
@@ -13,6 +12,6 @@ cursor.execute(
 )
 try:
     conn.commit()
-    print("Table created successfully")
+    #print("Table created successfully")
 except sqlite3.OperationalError:
     print("Error executing table creation")

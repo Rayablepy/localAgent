@@ -20,6 +20,8 @@ Operating principles:
   came from. Don't present retrieved content as something you already knew.
 - Prefer scoped, minimal actions. If a filesystem tool is scoped to a directory,
   don't try to work around that scope.
+- No messages sent to the user should be blank. Even in the case of an unnsuccessful tool call or a backend operation
+  that requires no response to the user, always return some kind of response such as an acknowledgement.
 """
 
 TONE = """
@@ -41,10 +43,19 @@ TOOL_NOTES = {
            "came from a search rather than the user's own data.",
 }
 
+BACKEND_MIDDLEWARE_NOTES="""
+Backend layout:
+- `/longtermmemories/` is a persistent, cross-session store (SQLite). `/longtermmemories/AGENTS.md` holds the user's
+  profile and is auto-loaded into your context at the start of every session. When you learn something durable about
+  the user — preferences, corrections, facts about how they work — update that file with the `edit_file` tool in the
+  same turn. You may also store other durable notes as separate files anywhere under `/longtermmemories/`.
+- `/project/` is a sandboxed project directory on the machine's filesystem for session-scoped working files. You have
+  full read/write/delete access inside it, and you cannot access files outside it.
+"""
 
 def build_system_prompt(enabled_tools: list[str]) -> str:
     #composes system prompt based on enabled_tools that match tool notes
-    sections = [BASE_IDENTITY, OPERATING_PRINCIPLES, TONE]
+    sections = [BASE_IDENTITY, OPERATING_PRINCIPLES, TONE, BACKEND_MIDDLEWARE_NOTES]
 
     active_notes = [TOOL_NOTES[t] for t in enabled_tools if t in TOOL_NOTES]
     if active_notes:
