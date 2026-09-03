@@ -5,6 +5,8 @@ async def main():
         user = str(input("Enter prompt: ")).lower()
         if user == "q":
             break
+        elif not user:
+             continue
         print("-"*75)
         modelresponse = await response(user)
         print(modelresponse["messages"][-1].content)
