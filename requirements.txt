@@ -1,6 +1,6 @@
 streamlit
 langchain
-langchain-openai
+langchain-openrouter
 ollama
 transformers
 torch
