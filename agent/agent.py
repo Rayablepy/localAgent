@@ -1,4 +1,7 @@
 import asyncio
+
+from accelerate.test_utils.scripts.external_deps.test_ds_alst_ulysses_sp import model
+
 from tools.tools import tool_list
 from config.settings import ENABLED_TOOLS, PROJECT_ROOT, MODEL_BASE_URL, MODEL_PROVIDER
 from agent.system_prompt import build_system_prompt
@@ -63,3 +66,16 @@ async def build_agent():
                 "/project/": FilesystemBackend(root_dir=PROJECT_ROOT,virtual_mode=True)
             }
         )
+    agent = create_deep_agent(
+        model=model,
+        system_prompt=build_system_prompt(ENABLED_TOOLS),
+        memory=["/longtermmemories/AGENTS.md"],
+        tools=tool_list,
+        backend=backend,
+        store=store,
+
+    return agent
+
+async def response(message: str):
+    agent=await build_agent()
+    return await agent.ainvoke({"messages": [{"role": "user", "content": message}]})
