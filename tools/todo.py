@@ -86,6 +86,19 @@ def delete_item(name:str):
     )
     conn.commit()
     return f"Item {name} deleted"
+@tool
+def delete_all_items():
+    """Delete all items from the todo list.ONLY USE IF THE USER EXPLICITLY REQUESTS FOR IT.
+        DO NOT USE THIS TOOL WITHOUT EXPLICIT PERMISSION FROM THE USER
+        Returns:
+            str: Confirmation message of the deletion.
+        """
+    cursor = conn.cursor()
+    cursor.execute(
+        "DELETE FROM TodoList"
+    )
+    conn.commit()
+    return "All items deleted"
 
 @tool
 def read_item(name:str):
