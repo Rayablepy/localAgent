@@ -80,7 +80,6 @@ def text_builder(blocks):
 
 
 def message_text(m):
-
     content = getattr(m, "content", None)
     if isinstance(content, str) and content.strip():
         return content.strip()

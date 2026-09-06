@@ -8,7 +8,11 @@ conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 cursor=conn.cursor()
 cursor.execute(
     "CREATE TABLE IF NOT EXISTS TodoList ("
-    "id INTEGER PRIMARY KEY, name TEXT NOT NULL, information TEXT NOT NULL, timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,complete BOOLEAN DEFAULT 0)"
+    "id INTEGER PRIMARY KEY, "
+    "name TEXT NOT NULL, "
+    "information TEXT NOT NULL, "
+    "timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+    "complete INTEGER DEFAULT 0)"
 )
 try:
     conn.commit()
