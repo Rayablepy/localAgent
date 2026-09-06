@@ -68,7 +68,8 @@ def alter_item_status(name:str, complete:int):
         (complete, name)
     )
     conn.commit()
-    return f"Item {name}'s status changed to {"complete" if complete == 0 else "incomplete"}"
+    status = "complete" if complete == 1 else "incomplete"
+    return f"Item {name}'s status changed to {status}"
 
 @tool
 def delete_item(name:str):
@@ -95,18 +96,43 @@ def read_item(name:str):
         str: The name,description, time created and status of the item.
         """
     cursor=conn.cursor()
-    cursor.execute(""
-                   "SELECT * FROM TodoList WHERE name = ?",
-                   (name,)
+    cursor.execute(
+        "SELECT * FROM TodoList WHERE name = ?",
+        (name,)
     )
+    row = cursor.fetchone()
+    if not row:
+        return f"Item '{name}' not found"
+    item_id, item_name, information, timestamp, complete = row
+    return (
+        f"ID: {item_id} "
+        f"Name: {item_name}"
+        f"Description: {information} "
+        f"Created: {timestamp}"
+        f"Status: {'complete' if complete == 1 else 'incomplete'}"
+    )
+
 @tool
 def read_all_items():
     """Read all the items and tasks in the todo list. DO NOT use this unless needed to
     find the names of all tasks for future operations or if the user explicitly requests it.
-    Returns:'
-    list[str]: The names of all items and tasks and their metadata."""
+    Returns:
+        str: A newline-separated list of all items and tasks and their metadata."""
     cursor = conn.cursor()
     cursor.execute(
         "SELECT * FROM TodoList"
     )
+    rows = cursor.fetchall()
+    if not rows:
+        return "No items in the todo list"
+    lines = []
+    for item_id, item_name, information, timestamp, complete in rows:
+        lines.append(
+            f"ID: {item_id} "
+            f"Name: {item_name}"
+            f"Description: {information} "
+            f"Created: {timestamp}"
+            f"Status: {'complete' if complete == 1 else 'incomplete'}"
+        )
+    return "\n".join(lines)
 todo_tool_list=[add_item, alter_item_name, alter_item_description, alter_item_status, delete_item, read_item, read_all_items]
