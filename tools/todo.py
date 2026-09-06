@@ -86,4 +86,27 @@ def delete_item(name:str):
     conn.commit()
     return f"Item {name} deleted"
 
-todo_tool_list=[add_item, alter_item_name, alter_item_description, alter_item_status, delete_item]
+@tool
+def read_item(name:str):
+    """Read an item/task from the todo list.
+    Args:
+        name (str): The name of the item/task.
+    Returns:
+        str: The name,description, time created and status of the item.
+        """
+    cursor=conn.cursor()
+    cursor.execute(""
+                   "SELECT * FROM TodoList WHERE name = ?",
+                   (name,)
+    )
+@tool
+def read_all_items():
+    """Read all the items and tasks in the todo list. DO NOT use this unless needed to
+    find the names of all tasks for future operations or if the user explicitly requests it.
+    Returns:'
+    list[str]: The names of all items and tasks and their metadata."""
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM TodoList"
+    )
+todo_tool_list=[add_item, alter_item_name, alter_item_description, alter_item_status, delete_item, read_item, read_all_items]
