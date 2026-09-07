@@ -12,7 +12,10 @@ ENABLED_TOOLS: list[str] = [
 ]
 
 CHAT_MODEL_NAME=os.getenv("CHAT_MODEL_NAME")
+OPENROUTER_API_KEY=os.getenv("OPENROUTER_API_KEY")
 EMBEDDING_MODEL_NAME=os.getenv("EMBEDDING_MODEL_NAME")
+MODEL_BASE_URL = "https://openrouter.ai/api/v1"
+MODEL_PROVIDER = "openai"
 
 # directory that file system tool has access to (dedicated agent sandbox)
 PROJECT_ROOT = Path.home() / "agent_project"
@@ -30,12 +33,6 @@ REQUIRE_APPROVAL: set[str] = {
     "create_calendar_event",
     "send_message",
 }
-
-# Local model server
-
-LOCAL_MODEL_BASE_URL = "http://localhost:1234/v1"
-LOCAL_MODEL_API_KEY = "not-needed"
-
 # Persistence
 
 DB_PATH = Path(__file__).resolve().parent.parent / "database" / "database.db"
