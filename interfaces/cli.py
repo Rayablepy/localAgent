@@ -1,5 +1,6 @@
 import asyncio
 from agent.agent import response
+
 async def main():
     while True:
         user = str(input("Enter prompt: ")).lower()

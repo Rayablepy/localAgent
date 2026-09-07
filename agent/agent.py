@@ -62,6 +62,7 @@ async def build_agent():
 
     return agent
 
+#parser for potential empty responses
 EMPTY_RESPONSE_FOLLOWUP = (
     "Your previous response was empty. "
     "Please reply to my request now with a written answer."
@@ -116,10 +117,15 @@ def extract_answer(state):
         if text:
             return text
     return ""
+#helper method to get all threads(conversations)
+async def list_threads():
+    ...
 
-async def response(message: str):
+#main response method
+async def response(message: str, thread_id:str):
     agent = await build_agent()
-    state = await agent.ainvoke({"messages": [{"role": "user", "content": message}]})
+    config={"configurable": {"thread_id":thread_id}}
+    state = await agent.ainvoke({"messages": [{"role": "user", "content": message}]},config=config)
     if not extract_answer(state):
         followup = {"role": "user", "content": EMPTY_RESPONSE_FOLLOWUP}
         state = await agent.ainvoke({"messages": [*state.get("messages", []), followup]})
