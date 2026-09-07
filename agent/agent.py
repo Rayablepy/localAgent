@@ -61,6 +61,16 @@ async def build_agent():
     )
 
     return agent
+#helper method to get a list of threads
+async def list_threads(limit: int = 50)->list[str]:
+    await build_agent()
+    threads = []
+    async for checkpoint in checkpointer.alist(None,limit=limit):
+        thread_id=checkpoint.config["configurable"]["thread_id"]
+        if thread_id in threads:
+            continue
+        threads.append(thread_id)
+    return threads
 
 #parser for potential empty responses
 EMPTY_RESPONSE_FOLLOWUP = (
