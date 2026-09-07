@@ -39,7 +39,7 @@ async def build_agent():
     if agent:
         return agent
     checkpointer_context_manager = AsyncSqliteSaver.from_conn_string(DB_PATH)
-    checkpointer=checkpointer_context_manager.__aenter__()
+    checkpointer=await checkpointer_context_manager.__aenter__()
     store_context_manager = AsyncSqliteStore.from_conn_string(DB_PATH)
     store = await store_context_manager.__aenter__()
     await store.setup()

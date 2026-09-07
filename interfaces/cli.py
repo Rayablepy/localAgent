@@ -24,11 +24,11 @@ async def menu():
                 print("No conversations found\n"+"-"*75)
                 continue
             for key in temp_choices:
-                print(f"{key}: {temp_choices[key]}")
+                print(f"{key+1}: {temp_choices[key]}")
             print("-"*75)
             thread_choice = input("Conversation Choice: ").strip()
             try:
-                thread_id = temp_choices.get(int(thread_choice))
+                thread_id = temp_choices.get(int(thread_choice)-1)
             except (ValueError, KeyError):
                 thread_id = None
             if thread_id:
@@ -40,6 +40,9 @@ async def menu():
             print("Invalid option")
 
 async def main():
+    thread = await menu()
+    if thread is None:
+        return
     while True:
         user = str(input("Enter prompt: ")).strip().lower()
         if user == "q":
@@ -47,7 +50,7 @@ async def main():
         elif not user:
              continue
         print("-"*75)
-        modelresponse = await response(user)
+        modelresponse = await response(user,thread)
         print(modelresponse["messages"][-1].content)
         print("-"*75)
 if __name__ == "__main__":
