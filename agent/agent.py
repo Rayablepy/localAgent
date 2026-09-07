@@ -117,9 +117,7 @@ def extract_answer(state):
         if text:
             return text
     return ""
-#helper method to get all threads(conversations)
-async def list_threads():
-    ...
+
 
 #main response method
 async def response(message: str, thread_id:str):
