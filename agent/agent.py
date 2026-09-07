@@ -9,6 +9,8 @@ from langchain.chat_models import init_chat_model
 from deepagents import create_deep_agent
 from deepagents.backends import FilesystemBackend,CompositeBackend,StateBackend, StoreBackend
 from langgraph.store.sqlite.aio import AsyncSqliteStore
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+
 DB_PATH.parent.mkdir(parents=True,exist_ok=True)
 PROJECT_ROOT.mkdir(parents=True,exist_ok=True)
 
@@ -20,18 +22,24 @@ model = init_chat_model(
     model_kwargs={"extra_body": {"provider": {"max_price": {"prompt": 0, "completion": 0}}}},
 )
 
+checkpointer=None
+checkpointer_context_manager=None
 store = None
 store_context_manager = None
 backend=None
 agent=None
 
 async def build_agent():
+    global checkpointer
+    global checkpointer_context_manager
     global store
     global store_context_manager
     global backend
     global agent
     if agent:
         return agent
+    checkpointer_context_manager = AsyncSqliteSaver.from_conn_string(DB_PATH)
+    checkpointer=checkpointer_context_manager.__aenter__()
     store_context_manager = AsyncSqliteStore.from_conn_string(DB_PATH)
     store = await store_context_manager.__aenter__()
     await store.setup()
@@ -49,6 +57,7 @@ async def build_agent():
         tools=tool_list,
         backend=backend,
         store=store,
+        checkpointer=checkpointer,
     )
 
     return agent
