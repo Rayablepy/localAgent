@@ -2,9 +2,10 @@ import asyncio
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from tools.tools import tool_list
-from config.settings import ENABLED_TOOLS, PROJECT_ROOT, MODEL_BASE_URL, MODEL_PROVIDER
+from config.settings import ENABLED_TOOLS, PROJECT_ROOT, MODEL_BASE_URL, MODEL_PROVIDER, LOCAL_MODEL_NAME, \
+    LOCAL_MODEL_BASE_URL
 from agent.system_prompt import build_system_prompt
-from config.settings import CHAT_MODEL_NAME, DB_PATH, OPENROUTER_API_KEY
+from config.settings import OPENROUTER_CHAT_MODEL_NAME, DB_PATH, OPENROUTER_API_KEY
 from langchain.chat_models import init_chat_model
 from deepagents import create_deep_agent
 from deepagents.backends import FilesystemBackend,CompositeBackend,StateBackend, StoreBackend
@@ -15,11 +16,17 @@ DB_PATH.parent.mkdir(parents=True,exist_ok=True)
 PROJECT_ROOT.mkdir(parents=True,exist_ok=True)
 
 model = init_chat_model(
-    model=CHAT_MODEL_NAME,
+    model=OPENROUTER_CHAT_MODEL_NAME,
     model_provider=MODEL_PROVIDER,
     base_url=MODEL_BASE_URL,
     api_key=OPENROUTER_API_KEY,
     model_kwargs={"extra_body": {"provider": {"max_price": {"prompt": 0, "completion": 0}}}},
+)
+local_model= init_chat_model(
+    model=LOCAL_MODEL_NAME,
+    model_provider=MODEL_PROVIDER,
+    base_url=LOCAL_MODEL_BASE_URL,
+    api_key=OPENROUTER_API_KEY, #this can be anything but i am just using the existing api key var
 )
 
 checkpointer=None
@@ -61,16 +68,6 @@ async def build_agent():
     )
 
     return agent
-#helper method to get a list of threads
-async def list_threads(limit: int = 50)->list[str]:
-    await build_agent()
-    threads = []
-    async for checkpoint in checkpointer.alist(None,limit=limit):
-        thread_id=checkpoint.config["configurable"]["thread_id"]
-        if thread_id in threads:
-            continue
-        threads.append(thread_id)
-    return threads
 
 #parser for potential empty responses
 EMPTY_RESPONSE_FOLLOWUP = (
@@ -128,6 +125,20 @@ def extract_answer(state):
             return text
     return ""
 
+#helper method to get a list of threads
+async def list_threads(limit: int = 50)->list[str]:
+    await build_agent()
+    threads = []
+    async for checkpoint in checkpointer.alist(None,limit=limit):
+        thread_id=checkpoint.config["configurable"]["thread_id"]
+        if thread_id in threads:
+            continue
+        config={"configurable":{"thread_id":thread_id}}
+        state_tuple = await agent.aget_state(config)
+        messages = state_tuple.get("messages", [])
+        if len(messages) < 2:
+
+    return threads
 
 #main response method
 async def response(message: str, thread_id:str):

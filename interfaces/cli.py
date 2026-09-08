@@ -12,7 +12,7 @@ async def menu():
         """)
         option = input("Choice: ")
         if option == "1":
-            thread_id = str(uuid.uuid4())[:8]
+            thread_id = str(uuid.uuid4())
             print(f"New conversation created with id: {thread_id}")
             print("-"*75)
             return thread_id
