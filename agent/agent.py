@@ -134,7 +134,7 @@ async def list_threads(limit: int = 50)->dict:
         thread_id=checkpoint.config["configurable"]["thread_id"]
         if thread_id in threads:
             continue
-        thread_item = await store.aget(("localAgent", "thread_names", thread_id))
+        thread_item = await store.aget(("localAgent", "thread_names"), thread_id)
         thread_name = thread_item.value["name"] if thread_item else None
         threads[thread_id]=thread_name
     return threads
