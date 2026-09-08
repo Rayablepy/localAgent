@@ -154,4 +154,17 @@ async def response(message: str, thread_id:str):
         last.content = final
         last.tool_calls = []
         last.tool_call_chunks = []
+    messages = state.get("messages", [])
+    if len(messages) == 2:
+        try:
+            name_prompt = [
+                SystemMessage(content="Summarise the following conversation in 5 messages or fewer. Reply ONLY with the summary and nothing else."),
+                messages[0],
+                messages[1],
+            ]
+            name_res=await local_model.ainvoke(name_prompt)
+            thread_name=name_res.content.strip()
+            await store.aput(
+                ()
+            )
     return state
