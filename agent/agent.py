@@ -22,6 +22,7 @@ model = init_chat_model(
     api_key=OPENROUTER_API_KEY,
     model_kwargs={"extra_body": {"provider": {"max_price": {"prompt": 0, "completion": 0}}}},
 )
+#general purpose light model for small scale tasks
 local_model= init_chat_model(
     model=LOCAL_MODEL_NAME,
     model_provider=MODEL_PROVIDER,
@@ -126,20 +127,37 @@ def extract_answer(state):
     return ""
 
 #helper method to get a list of threads
-async def list_threads(limit: int = 50)->list[str]:
+async def list_threads(limit: int = 50)->dict:
     await build_agent()
-    threads = []
+    threads = {}
     async for checkpoint in checkpointer.alist(None,limit=limit):
         thread_id=checkpoint.config["configurable"]["thread_id"]
         if thread_id in threads:
             continue
-        config={"configurable":{"thread_id":thread_id}}
-        state_tuple = await agent.aget_state(config)
-        messages = state_tuple.get("messages", [])
-        if len(messages) < 2:
-
+        thread_item = await store.aget(("localAgent", "thread_names", thread_id))
+        thread_name = thread_item.value["name"] if thread_item else None
+        threads[thread_id]=thread_name
     return threads
 
+async def thread_renamer(state,thread_id):
+    messages = state.get("messages", [])
+    if len(messages) == 2:
+        try:
+            name_prompt = [
+                SystemMessage(
+                    content="Summarise the following conversation in 5 messages or fewer. Reply ONLY with the summary and nothing else."),
+                messages[0],
+                messages[1],
+            ]
+            name_res = await local_model.ainvoke(name_prompt)
+            thread_name = name_res.content.strip()
+            await store.aput(
+                ("localAgent", "thread_names"),
+                thread_id,
+                {"name": thread_name},
+            )
+        except Exception:
+            pass
 #main response method
 async def response(message: str, thread_id:str):
     agent = await build_agent()
@@ -154,17 +172,5 @@ async def response(message: str, thread_id:str):
         last.content = final
         last.tool_calls = []
         last.tool_call_chunks = []
-    messages = state.get("messages", [])
-    if len(messages) == 2:
-        try:
-            name_prompt = [
-                SystemMessage(content="Summarise the following conversation in 5 messages or fewer. Reply ONLY with the summary and nothing else."),
-                messages[0],
-                messages[1],
-            ]
-            name_res=await local_model.ainvoke(name_prompt)
-            thread_name=name_res.content.strip()
-            await store.aput(
-                ()
-            )
+    await thread_renamer(state,thread_id)
     return state

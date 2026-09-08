@@ -18,17 +18,17 @@ async def menu():
             return thread_id
         elif option == "2":
             temp_choices = {}
-            for index, thread_id in enumerate(await list_threads()):
-                temp_choices[index] = thread_id
+            for index, (thread_id,thread_name) in enumerate((await list_threads()).items()):
+                temp_choices[index] = {"name":thread_name, "id":thread_id}
             if not temp_choices:
                 print("No conversations found\n"+"-"*75)
                 continue
             for key in temp_choices:
-                print(f"{key+1}: {temp_choices[key]}")
+                print(f"{key+1}: {temp_choices[key]["name"]}")
             print("-"*75)
-            thread_choice = input("Conversation Choice: ").strip()
+            thread_choice = input("Conversation Choice by Index: ").strip()
             try:
-                thread_id = temp_choices.get(int(thread_choice)-1)
+                thread_id = (temp_choices.get(int(thread_choice)-1))["id"]
             except (ValueError, KeyError):
                 thread_id = None
             if thread_id:
