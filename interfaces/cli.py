@@ -33,7 +33,8 @@ async def menu():
                 thread_id = None
             if thread_id:
                 return thread_id
-            print("Invalid option")
+            else:
+                print("Invalid choice")
         elif option == "3":
             return None
         else:

@@ -145,12 +145,24 @@ async def thread_renamer(state,thread_id):
         try:
             name_prompt = [
                 SystemMessage(
-                    content="Summarise the following conversation in 5 messages or fewer. Reply ONLY with the summary and nothing else."),
+                    content="Summarise the following conversation in 5 messages or fewer. Reply ONLY with the summary and nothing else."
+                            "For example:"
+                            "Casual exchange"
+                            "or:"
+                            "help with code"),
                 messages[0],
                 messages[1],
             ]
             name_res = await local_model.ainvoke(name_prompt)
-            thread_name = name_res.content.strip()
+
+            if not extract_answer(name_res):
+                followup={"role": "user", "content": EMPTY_RESPONSE_FOLLOWUP}
+                name_res_new = await name_prompt.ainvoke({"messages": [{"role": "assistant", "content": name_res}, followup]})
+                thread_name = name_res_new.content.strip()
+            else:
+                thread_name=name_res.content.strip()
+            if thread_name is None:
+                raise "Model returned no name"
             await store.aput(
                 ("localAgent", "thread_names"),
                 thread_id,

@@ -17,7 +17,7 @@ LOCAL_MODEL_NAME=os.getenv("LOCAL_MODEL_NAME")
 LOCAL_EMBEDDING_MODEL_NAME=os.getenv("LOCAL_EMBEDDING_MODEL_NAME")
 MODEL_BASE_URL = "https://openrouter.ai/api/v1"
 MODEL_PROVIDER = "openai"
-LOCAL_MODEL_BASE_URL = "https://openrouter.ai/api/v1"
+LOCAL_MODEL_BASE_URL = "http://localhost:1234/v1"
 
 # directory that file system tool has access to (dedicated agent sandbox)
 PROJECT_ROOT = Path.home() / "agent_project"
