@@ -1,6 +1,7 @@
 import asyncio
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_openrouter import ChatOpenRouter
 from tools.tools import tool_list
 from config.settings import ENABLED_TOOLS, PROJECT_ROOT, MODEL_BASE_URL, MODEL_PROVIDER, LOCAL_MODEL_NAME, \
     LOCAL_MODEL_BASE_URL
@@ -15,9 +16,8 @@ from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 DB_PATH.parent.mkdir(parents=True,exist_ok=True)
 PROJECT_ROOT.mkdir(parents=True,exist_ok=True)
 
-model = init_chat_model(
+model = ChatOpenRouter(
     model=OPENROUTER_CHAT_MODEL_NAME,
-    model_provider=MODEL_PROVIDER,
     base_url=MODEL_BASE_URL,
     api_key=OPENROUTER_API_KEY,
     model_kwargs={"extra_body": {"provider": {"max_price": {"prompt": 0, "completion": 0}}}},
@@ -136,7 +136,9 @@ async def list_threads(limit: int = 50)->dict:
             continue
         thread_item = await store.aget(("localAgent", "thread_names"), thread_id)
         thread_name = thread_item.value["name"] if thread_item else None
-        threads[thread_id]=thread_name
+        if not thread_name:
+            thread_name="Untitled Chat"
+        threads[thread_id] = thread_name
     return threads
 
 async def thread_renamer(state,thread_id):
@@ -154,15 +156,9 @@ async def thread_renamer(state,thread_id):
                 messages[1],
             ]
             name_res = await local_model.ainvoke(name_prompt)
-
-            if not extract_answer(name_res):
-                followup={"role": "user", "content": EMPTY_RESPONSE_FOLLOWUP}
-                name_res_new = await name_prompt.ainvoke({"messages": [{"role": "assistant", "content": name_res}, followup]})
-                thread_name = name_res_new.content.strip()
-            else:
-                thread_name=name_res.content.strip()
-            if thread_name is None:
-                raise "Model returned no name"
+            thread_name=message_text(name_res).strip()
+            if not thread_name:
+                return
             await store.aput(
                 ("localAgent", "thread_names"),
                 thread_id,
