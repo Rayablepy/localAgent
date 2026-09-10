@@ -20,16 +20,17 @@ model = ChatOpenRouter(
     model=OPENROUTER_CHAT_MODEL_NAME,
     base_url=MODEL_BASE_URL,
     api_key=OPENROUTER_API_KEY,
-    model_kwargs={"extra_body": {"provider": {"max_price": {"prompt": 0, "completion": 0}}}},
+    openrouter_provider={"max_price": {"prompt": 0, "completion": 0}},
 )
 #general purpose light model for small scale tasks
+'''
 local_model= init_chat_model(
     model=LOCAL_MODEL_NAME,
     model_provider=MODEL_PROVIDER,
     base_url=LOCAL_MODEL_BASE_URL,
     api_key=OPENROUTER_API_KEY, #this can be anything but i am just using the existing api key var
 )
-
+'''
 checkpointer=None
 checkpointer_context_manager=None
 store = None
@@ -145,20 +146,7 @@ async def thread_renamer(state,thread_id):
     messages = state.get("messages", [])
     if len(messages) == 2:
         try:
-            name_prompt = [
-                SystemMessage(
-                    content="Summarise the following conversation in 5 messages or fewer. Reply ONLY with the summary and nothing else."
-                            "For example:"
-                            "Casual exchange"
-                            "or:"
-                            "help with code"),
-                messages[0],
-                messages[1],
-            ]
-            name_res = await local_model.ainvoke(name_prompt)
-            thread_name=message_text(name_res).strip()
-            if not thread_name:
-                return
+            thread_name=thread_id[:8]
             await store.aput(
                 ("localAgent", "thread_names"),
                 thread_id,
